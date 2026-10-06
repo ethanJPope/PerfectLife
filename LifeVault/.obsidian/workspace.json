@@ -1,0 +1,201 @@
+{
+  "main": {
+    "id": "e601118c926d61bb",
+    "type": "split",
+    "children": [
+      {
+        "id": "cc866b81e9bd1d7c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ab6ed219bcc2e2b7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "03 Projects/Forge Supercon 2026.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Forge Supercon 2026"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "51c1c702a931529a",
+    "type": "split",
+    "children": [
+      {
+        "id": "ecda17ee73ed75b6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1ab9f01b7fd58577",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "0db6a0646b7b843e",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "a74e3c9045198dae",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "1fd4be1170b3ba5f",
+    "type": "split",
+    "children": [
+      {
+        "id": "d48e5b7e432fb712",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "00bce0fb5d4ebb5d",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "03 Projects/Forge Supercon 2026.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Forge Supercon 2026"
+            }
+          },
+          {
+            "id": "b14f041df6e6d0e4",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "03 Projects/Forge Supercon 2026.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Forge Supercon 2026"
+            }
+          },
+          {
+            "id": "00db42630310e3a1",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "801a72f0ded3993b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "03 Projects/Forge Supercon 2026.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Forge Supercon 2026"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "ab6ed219bcc2e2b7",
+  "lastOpenFiles": [
+    "03 Projects/Jet-powered aeronautics presentation.md",
+    "03 Projects/Forge go-kart.md",
+    "00 System/Start.md",
+    "07 Journal/2026/09/2026-09-21 1821 Supercon coin planning.md",
+    "03 Projects/Forge Supercon 2026.md",
+    "07 Journal/2026/09/2026-09-21 1815 Calculus tutoring handoff.md",
+    "06 Learning/2.2 Definition of the Derivative.md",
+    "06 Learning/2.1 Average Rate of Change.md",
+    "07 Journal/2026/09/2026-09-21 1553 Go-kart continuation handoff.md",
+    "07 Journal/2026/09/2026-09-20 2125 Rolling chassis budget.md",
+    "07 Journal/2026/09/2026-09-20 2105 Thirty Ah budget battery search.md",
+    "07 Journal/2026/09/2026-09-20 2101 Sub-650 battery search.md",
+    "07 Journal/2026/09/2026-09-20 2055 Kunray powertrain revision.md",
+    "07 Journal/2026/09/2026-09-20 2047 Blwny manufacturer verification.md",
+    "07 Journal/2026/09/2026-09-20 2040 Walmart battery listing inspection.md",
+    "07 Journal/2026/09/2026-09-20 2030 Go-kart battery ratings confirmed.md",
+    "07 Journal/2026/09/2026-09-20 2022 Go-kart motor match.md",
+    "07 Journal/2026/09/2026-09-20 1815 Go-kart 100 A correction.md",
+    "07 Journal/2026/09/2026-09-20 1811 Go-kart battery budget revision.md",
+    "05 Knowledge/Go-kart 72 V budget revision.md",
+    "07 Journal/2026/09/2026-09-20 1805 Go-kart BOM.md",
+    "03 Projects/Forge go-kart BOM.csv",
+    "03 Projects/Forge go-kart BOM.md",
+    "07 Journal/2026/09/2026-09-20 1756 Go-kart CAD and terrain.md",
+    "07 Journal/2026/09/2026-09-20 1739 Quality go-kart requirements.md",
+    "05 Knowledge/Quality go-kart options 30 mph 45 minutes.md",
+    "07 Journal/2026/09/2026-09-20 1730 Go-kart speed target.md",
+    "05 Knowledge/Forge go-kart sourcing worksheet.csv"
+  ]
+}

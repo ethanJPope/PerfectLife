@@ -1,0 +1,466 @@
+{
+  "object_path_samples": [
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.0,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.1,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.2,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.3,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.4,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.5,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.6,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.7,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.8,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 0.9,
+      "pairs": []
+    },
+    {
+      "segment": "floor -> carry",
+      "fraction": 1.0,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.0,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.1,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.2,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.3,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.4,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.5,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.6,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.7,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.8,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 0.9,
+      "pairs": []
+    },
+    {
+      "segment": "carry -> retract_raise_outside_shelf",
+      "fraction": 1.0,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.0,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.1,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.2,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.3,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.4,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.5,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.6,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.7,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.8,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 0.9,
+      "pairs": []
+    },
+    {
+      "segment": "retract_raise_outside_shelf -> raise_lift_outside_shelf",
+      "fraction": 1.0,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.0,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.1,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.2,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.3,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.4,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.5,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.6,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.7,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.8,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 0.9,
+      "pairs": []
+    },
+    {
+      "segment": "raise_lift_outside_shelf -> advance_above_shelf",
+      "fraction": 1.0,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.0,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.1,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.2,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.3,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.4,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.5,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.6,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.7,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.8,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 0.9,
+      "pairs": []
+    },
+    {
+      "segment": "advance_above_shelf -> shelf_approach_4mm_above",
+      "fraction": 1.0,
+      "pairs": []
+    }
+  ],
+  "yaw_samples": [
+    {
+      "side": "Left",
+      "yaw_deg": -70,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": -50,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": -30,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": 0,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": 30,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": 50,
+      "robot_pairs": []
+    },
+    {
+      "side": "Left",
+      "yaw_deg": 70,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": -70,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": -50,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": -30,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": 0,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": 30,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": 50,
+      "robot_pairs": []
+    },
+    {
+      "side": "Right",
+      "yaw_deg": 70,
+      "robot_pairs": []
+    }
+  ],
+  "waypoints": [
+    {
+      "name": "floor",
+      "h": 400,
+      "angles_deg": [
+        [
+          0.0,
+          -10.546988341982619,
+          -94.60143303347009,
+          105.1484213754527
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    },
+    {
+      "name": "carry",
+      "h": 900,
+      "angles_deg": [
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    },
+    {
+      "name": "retract_raise_outside_shelf",
+      "h": 900,
+      "angles_deg": [
+        [
+          0.0,
+          91.06926720355621,
+          -15.447384499125606,
+          -75.6218827044306
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    },
+    {
+      "name": "raise_lift_outside_shelf",
+      "h": 1400,
+      "angles_deg": [
+        [
+          0.0,
+          91.06926720355621,
+          -15.447384499125606,
+          -75.6218827044306
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    },
+    {
+      "name": "advance_above_shelf",
+      "h": 1400,
+      "angles_deg": [
+        [
+          0.0,
+          76.56264118798185,
+          -20.274694779788934,
+          -56.28794640819292
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    },
+    {
+      "name": "shelf_approach_4mm_above",
+      "h": 1400,
+      "angles_deg": [
+        [
+          0.0,
+          101.95465229835638,
+          -95.96405136691997,
+          -5.990600931436408
+        ],
+        [
+          0.0,
+          73.80714264608964,
+          -147.6142852921793,
+          73.80714264608964
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Discrete samples, not continuous path certification.",
+    "Box follows gripper as a geometric envelope; no grasp force, dynamics or deformation.",
+    "Shelf path stops about 4 mm above placement; settling separately checked as a static pose."
+  ]
+}

@@ -1,0 +1,2 @@
+# LifeVault
+Read `00 System/Start.md`, `00 System/Context.md`, and `03 Projects/Projects.md` at session start. Follow links relevant to the current request. Before memory writes, read `00 System/Memory rules.md`. Treat this vault as a fresh start; do not import old personal context. Preserve evidence and distinguish current facts, historical facts, and inferences. Ask concise useful questions proactively. Use the specialized skills listed in `00 System/Skill registry.md`. Do not load the entire archive.

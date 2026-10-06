@@ -1,0 +1,639 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id                    :bigint           not null, primary key
+#  address_line1         :string
+#  address_line2         :string
+#  avatar                :string           not null
+#  ban_reason            :text
+#  birthday              :date
+#  bypass_idv            :boolean          default(FALSE), not null
+#  city                  :string
+#  country               :string
+#  discarded_at          :datetime
+#  display_name          :string           not null
+#  email                 :string           not null
+#  first_name            :string
+#  fulfillment_regions   :string           default([]), not null, is an Array
+#  git_instance_url      :string
+#  git_provider          :string           default("github")
+#  github_username       :string
+#  guild                 :integer
+#  hackatime_banned_at   :datetime
+#  hca_token             :text
+#  is_adult              :boolean          default(FALSE), not null
+#  is_banned             :boolean          default(FALSE), not null
+#  is_beta_approved      :boolean          default(FALSE), not null
+#  last_name             :string
+#  last_seen_at          :datetime
+#  maintenance_bypass    :boolean          default(FALSE), not null
+#  onboarded_at          :datetime
+#  permissions           :string           default([]), not null, is an Array
+#  phone_number          :string
+#  postal_code           :string
+#  referral_code         :string
+#  region                :string           default("rest_of_world")
+#  roles                 :string           default([]), not null, is an Array
+#  shop_unlocked         :boolean          default(FALSE), not null
+#  state                 :string
+#  streak_freezes        :integer          default(1), not null
+#  timezone              :string           not null
+#  timezone_manually_set :boolean          default(FALSE), not null
+#  verification_status   :string
+#  created_at            :datetime         not null
+#  updated_at            :datetime         not null
+#  hca_id                :string           not null
+#  slack_id              :string           not null
+#
+# Indexes
+#
+#  index_users_on_discarded_at         (discarded_at)
+#  index_users_on_guild                (guild)
+#  index_users_on_hackatime_banned_at  (hackatime_banned_at)
+#  index_users_on_last_seen_at         (last_seen_at)
+#  index_users_on_referral_code        (referral_code) UNIQUE
+#
+class User < ApplicationRecord
+  include Discardable
+  include HasRegion
+  include PgSearch::Model
+
+  has_paper_trail
+
+  after_commit :bust_cache
+
+  def bust_cache
+    Rails.cache.delete("user/#{id}")
+  end
+
+  enum :guild, { rivendell: 0, erebor: 1, edoras: 2, valinor: 3 }
+  scope :in_guild, ->(name) { where(guild: name) }
+
+  after_commit :enqueue_guild_channel_invite, on: %i[create update], if: :saved_change_to_guild?
+
+  def joined_guild?
+    guild.present?
+  end
+
+  pg_search_scope :search, against: [ :display_name, :email, :slack_id ], using: { tsearch: { prefix: true } }
+
+  has_many :ahoy_visits, class_name: "Ahoy::Visit", dependent: :nullify
+  has_many :ahoy_events, class_name: "Ahoy::Event", dependent: :nullify
+  has_many :projects, dependent: :destroy
+  has_many :ships, through: :projects
+  has_many :reviewed_ships, class_name: "Ship", foreign_key: :reviewer_id, dependent: :nullify, inverse_of: :reviewer
+  has_many :user_notes, dependent: :destroy
+  has_many :authored_project_notes, class_name: "ProjectNote", foreign_key: :author_id, dependent: :destroy, inverse_of: :author
+  has_many :kudos, dependent: :destroy
+  has_many :authored_kudos, class_name: "Kudo", foreign_key: :author_id, dependent: :destroy, inverse_of: :author
+  has_many :audit_events, class_name: "AuditEvent", foreign_key: :actor_id, dependent: :nullify, inverse_of: :actor
+  has_many :orders, dependent: :destroy
+  has_many :assigned_orders, class_name: "Order", foreign_key: :assigned_to_id, dependent: :nullify, inverse_of: :assigned_to
+  has_many :coin_adjustments, dependent: :destroy
+  has_many :project_collaborations, class_name: "ProjectCollaborator", dependent: :destroy
+  has_many :collaborated_projects, through: :project_collaborations, source: :project
+  has_many :project_payouts, dependent: :destroy
+  has_many :collaboration_invites_received, class_name: "CollaborationInvite", foreign_key: :invitee_id, dependent: :destroy, inverse_of: :invitee
+  has_many :collaboration_invites_sent, class_name: "CollaborationInvite", foreign_key: :inviter_id, dependent: :destroy, inverse_of: :inviter
+  has_many :referrals_made, class_name: "Referral", foreign_key: :referrer_id, dependent: :destroy, inverse_of: :referrer
+  has_one :referral_received, class_name: "Referral", foreign_key: :referred_id, dependent: :destroy, inverse_of: :referred
+  has_many :streak_days, dependent: :destroy
+  has_many :login_days, class_name: "UserLoginDay", dependent: :destroy
+  has_many :badges, dependent: :destroy
+  has_many :awarded_badges, class_name: "Badge", foreign_key: :awarder_id, dependent: :nullify, inverse_of: :awarder
+  has_many :reels, dependent: :destroy
+  has_many :reel_kudos, dependent: :destroy
+  has_many :reel_comments, dependent: :destroy
+  has_many :reel_views, dependent: :destroy
+
+  STREAK_MULTIPLIER_TIERS = [
+    [ 3,   1.02 ],
+    [ 7,   1.05 ],
+    [ 14,  1.10 ],
+    [ 30,  1.15 ],
+    [ 60,  1.20 ],
+    [ 100, 1.25 ]
+  ].freeze
+
+  def today_in_zone
+    Time.current.in_time_zone(timezone.presence || "UTC").to_date
+  end
+
+  def self.timezone_identifier(value)
+    zone = ActiveSupport::TimeZone[value.to_s.strip]
+    zone && zone.tzinfo.identifier
+  end
+
+  def self.timezone_options
+    ActiveSupport::TimeZone.all.map { |zone| { value: zone.tzinfo.identifier, label: zone.to_s } }
+      .uniq { |option| option[:value] }
+  end
+
+  def timezone_label
+    zone = ActiveSupport::TimeZone[timezone.presence || "UTC"]
+    zone ? zone.to_s : timezone
+  end
+
+  STREAK_FREEZE_COST = 5
+
+  def record_activity!(date = today_in_zone)
+    StreakService.record_activity(self, date)
+  end
+
+  def apply_streak_freezes!(today = today_in_zone)
+    StreakService.reconcile_missed_days(self, today)
+  end
+
+  def adjust_streak!(delta, today: today_in_zone)
+    delta = delta.to_i
+    return 0 if delta.zero?
+
+    if delta.positive?
+      counting = streak_days.streak_counting
+      cursor = if counting.exists?(date: today)
+        c = today - 1
+        c -= 1 while counting.exists?(date: c)
+        c
+      else
+        today
+      end
+
+      added = 0
+      transaction do
+        delta.times do
+          day = streak_days.find_or_initialize_by(date: cursor)
+          day.update!(status: :active)
+          cursor -= 1
+          added += 1
+        end
+      end
+      added
+    else
+      ids = streak_days.streak_counting.order(date: :desc).limit(-delta).pluck(:id)
+      streak_days.where(id: ids).delete_all
+      -ids.size
+    end
+  end
+
+  def streak_multiplier(streak = current_streak)
+    STREAK_MULTIPLIER_TIERS.reverse_each do |threshold, mult|
+      return mult if streak >= threshold
+    end
+    1.0
+  end
+
+  def next_streak_milestone(streak = current_streak)
+    STREAK_MULTIPLIER_TIERS.map(&:first).find { |d| d > streak }
+  end
+
+  def next_streak_multiplier(streak = current_streak)
+    pair = STREAK_MULTIPLIER_TIERS.find { |d, _| d > streak }
+    pair&.last
+  end
+
+  def current_streak(today: today_in_zone)
+    StreakDay.current_streak(self, today: today)
+  end
+
+  def longest_streak
+    StreakDay.longest_streak(self)
+  end
+
+  def last_active_on
+    streak_days.streak_counting.maximum(:date)
+  end
+
+  before_validation :ensure_referral_code, on: :create
+
+  encrypts :hca_token
+
+  validates :avatar, :display_name, :email, :timezone, presence: true
+  validates :slack_id, presence: true
+  validates :hca_id, presence: true
+  validates :roles, presence: true
+  validates :is_banned, inclusion: { in: [ true, false ] }
+  validates :region, inclusion: { in: REGION_KEYS }, allow_nil: true
+
+  def has_role?(role)
+    roles.include?(role.to_s)
+  end
+
+  def add_role(role)
+    roles << role.to_s unless has_role?(role)
+    save
+  end
+
+  def remove_role(role)
+    roles.delete(role.to_s)
+    save
+  end
+
+  def admin?
+    has_role?(:admin)
+  end
+
+  def user?
+    has_role?(:user)
+  end
+
+  def reviewer?
+    has_role?(:reviewer)
+  end
+
+  def support?
+    has_role?(:support)
+  end
+
+  def fulfillment?
+    has_role?(:fulfillment)
+  end
+
+  def staff?
+    admin? || reviewer? || support? || fulfillment?
+  end
+
+  AVAILABLE_PERMISSIONS = %w[
+    pending_reviews
+    review_tier_1
+    review_tier_2
+    review_tier_3
+    review_tier_4
+    review_requirements
+    fraud
+    projects
+    users
+    ships
+    feature_flags
+    audit_log
+    jobs
+    third_party
+    support
+    hackatime
+    orders
+    referrals
+    superadmin
+  ].freeze
+
+  ROLE_DEFAULT_PERMISSIONS = {
+    "admin" => AVAILABLE_PERMISSIONS - %w[superadmin],
+    "reviewer" => %w[pending_reviews review_tier_1 review_tier_2 review_tier_3 review_tier_4 review_requirements projects ships hackatime],
+    "support" => %w[projects users support],
+    "fulfillment" => %w[projects ships orders]
+  }.freeze
+
+  def has_permission?(perm)
+    permissions.include?(perm.to_s)
+  end
+
+  def allowed_review_tiers
+    Project::TIERS.select { |tier| has_permission?("review_#{tier}") }
+  end
+
+  def superadmin?
+    has_permission?("superadmin")
+  end
+
+  def coins_earned
+    # Legacy path: solo projects (no per-member payout rows) pay the owner the
+    # full project amount. Group projects pay each member their snapshotted
+    # ProjectPayout share instead — including projects this user collaborated on.
+    legacy = projects.kept.where.not(id: ProjectPayout.select(:project_id)).sum(&:coins_earned)
+    shared = project_payouts.joins(:project).merge(Project.kept).sum(:coins).to_f
+    (legacy + shared).round(2)
+  end
+
+  def coins_spent
+    orders.where(status: %i[pending approved fulfilled]).sum(:coin_cost).to_f
+  end
+
+  def coins_adjusted
+    coin_adjustments.sum(:amount).to_f
+  end
+
+  def coin_balance
+    (coins_earned + coins_adjusted - coins_spent).round(2)
+  end
+
+  def has_built_project?
+    projects.kept.where.not(built_at: nil).exists?
+  end
+
+  def can_buy_shop_items?
+    (has_attribute?(:shop_unlocked) && shop_unlocked?) || has_built_project?
+  end
+
+  def over_18_on_file?
+    return false if birthday.blank?
+
+    ((Date.current - birthday) / 365.25).floor >= 19
+  end
+
+  IDV_VERIFIED_STATUSES = %w[verified verified_eligible].freeze
+
+  def idv_verified?
+    return true if bypass_idv?
+    return false if over_18_on_file?
+
+    IDV_VERIFIED_STATUSES.include?(verification_status)
+  end
+
+  def idv_display_status
+    return "verified_but_over_18_on_file" if IDV_VERIFIED_STATUSES.include?(verification_status) && over_18_on_file?
+
+    verification_status
+  end
+
+  def grant_permission(perm)
+    self.permissions |= [ perm.to_s ]
+  end
+
+  def revoke_permission(perm)
+    permissions.delete(perm.to_s)
+  end
+
+  def apply_default_permissions_for_role(role)
+    defaults = ROLE_DEFAULT_PERMISSIONS[role.to_s]
+    return unless defaults
+
+    self.permissions |= defaults
+  end
+
+  def self.exchange_hca_token(code, redirect_uri)
+    token_data = HcaService.exchange_code_for_token(code, redirect_uri)
+
+    unless token_data
+      raise StandardError, "Failed to exchange authorization code for HCA access token"
+    end
+
+    access_token = token_data["access_token"]
+    unless access_token
+      raise StandardError, "No access token in HCA response"
+    end
+
+    hca_response = HcaService.me(access_token)
+    unless hca_response
+      raise StandardError, "Failed to fetch user identity from HCA"
+    end
+
+    identity = hca_response["identity"]
+    unless identity
+      raise StandardError, "No identity data in HCA response"
+    end
+
+    hca_id = identity["id"]
+    email = identity["primary_email"]
+    user = User.find_by(hca_id: hca_id)
+
+    if user.blank? && ysws_ineligible?(identity)
+      raise StandardError, "Sorry, Forge is for YSWS-eligible teen builders. You're not eligible to participate."
+    end
+
+    if user.present?
+      Rails.logger.tagged("UserCreation") do
+        Rails.logger.info({
+          event: "existing_user_found",
+          hca_id: hca_id,
+          user_id: user.id
+        }.to_json)
+      end
+
+      user.update(hca_token: access_token, email: email)
+      user.apply_hca_identity(identity)
+      user.refresh_profile_from_slack
+      return user
+    end
+
+    user = create_from_hca(identity, access_token)
+    user.apply_hca_identity(identity)
+    user.refresh_profile_from_slack
+    user
+  end
+
+  def apply_hca_identity(identity)
+    return if identity.blank?
+
+    addr = Array(identity["addresses"]).first
+    addr = identity["address"] if addr.blank? && identity["address"].is_a?(Hash)
+    addr ||= {}
+
+    birthday_val = begin
+      Date.parse(identity["birthday"].to_s)
+    rescue StandardError
+      nil
+    end
+
+    attrs = {
+      address_line1: pick(addr, %w[line_1 address_line_1 address_line1 line1 street]).presence,
+      address_line2: pick(addr, %w[line_2 address_line_2 address_line2 line2]).presence,
+      city: pick(addr, %w[city locality]).presence,
+      state: pick(addr, %w[state state_province province region]).presence,
+      country: pick(addr, %w[country country_code]).presence,
+      postal_code: pick(addr, %w[postal_code zip zip_code postcode]).presence,
+      phone_number: (pick(identity, %w[phone_number phone]).presence || pick(addr, %w[phone_number phone]).presence),
+      birthday: birthday_val,
+      verification_status: identity["verification_status"].presence
+    }.compact
+
+    update(attrs) if attrs.any?
+  end
+
+  def self.create_from_hca(identity, access_token)
+    email = identity["primary_email"]
+    first_name = identity["first_name"] || ""
+    last_name = identity["last_name"] || ""
+    display_name = first_name.presence || identity["id"] || "User"
+    avatar = identity["profile_picture"].presence || "/static-assets/pfp_fallback.webp"
+    timezone = "UTC"
+    slack_id = identity["slack_id"] || ""
+    verification_status = identity["verification_status"] || ""
+    is_adult = determine_is_adult(identity)
+    birthday = begin
+      Date.parse(identity["birthday"].to_s)
+    rescue StandardError
+      nil
+    end
+
+    if email.blank? || !(email =~ URI::MailTo::EMAIL_REGEXP)
+      Rails.logger.warn({
+        event: "hca_user_missing_or_invalid_email",
+        email: email,
+        identity: identity
+      }.to_json)
+      raise StandardError, "HCA user has an invalid email: #{email.inspect}"
+    end
+
+    Rails.logger.tagged("UserCreation") do
+      Rails.logger.info({
+        event: "hca_user_found",
+        email: email,
+        display_name: display_name,
+        slack_id: slack_id,
+        is_adult: is_adult
+      }.to_json)
+    end
+
+    User.create!(
+      email: email,
+      display_name: display_name,
+      first_name: first_name.presence,
+      last_name: last_name.presence,
+      birthday: birthday,
+      avatar: avatar,
+      timezone: timezone,
+      slack_id: slack_id,
+      verification_status: verification_status,
+      hca_token: access_token,
+      hca_id: identity["id"],
+      is_adult: is_adult,
+      is_banned: false,
+      roles: [ "user" ]
+    )
+  end
+
+  def refresh_profile_from_slack
+    return if slack_id.blank?
+
+    user_info = User.fetch_slack_user_info(normalized_slack_id)
+    return unless user_info
+
+    profile = user_info.user.profile
+    return unless profile
+
+    new_display_name = profile.display_name.presence
+    new_avatar = profile.image_192.presence ||
+      profile.image_512.presence ||
+      profile.image_72.presence ||
+      profile.image_48.presence ||
+      profile.image_32.presence ||
+      profile.image_24.presence ||
+      profile.image_original
+    new_timezone = user_info.user.tz
+
+    updates = {}
+    updates[:display_name] = new_display_name if new_display_name.present? && display_name != new_display_name
+    if new_avatar.present? && avatar != new_avatar
+      updates[:avatar] = new_avatar
+    elsif avatar.blank?
+      updates[:avatar] = "/static-assets/pfp_fallback.webp"
+    end
+    updates[:timezone] = new_timezone if new_timezone.present? && timezone != new_timezone && !timezone_manually_set?
+
+    return if updates.empty?
+
+    Rails.logger.tagged("ProfileRefresh") do
+      Rails.logger.info({
+        event: "slack_profile_refresh",
+        user_id: id,
+        slack_id: slack_id,
+        updates: updates.keys
+      }.to_json)
+    end
+
+    update!(updates)
+  rescue StandardError => e
+    Rails.logger.tagged("ProfileRefresh") do
+      Rails.logger.error({
+        event: "slack_profile_refresh_failed",
+        user_id: id,
+        slack_id: slack_id,
+        error: e.message
+      }.to_json)
+    end
+  end
+
+  def first_ref
+    first_visit = ahoy_visits.order(:started_at).first
+    return nil unless first_visit
+
+    visitor_token = first_visit.visitor_token
+    earliest_visit_with_ref = Ahoy::Visit.where(visitor_token: visitor_token)
+                                          .where.not(utm_source: nil)
+                                          .order(:started_at)
+                                          .first
+
+    earliest_visit_with_ref&.utm_source
+  end
+
+  private
+
+  def pick(hash, keys)
+    return "" unless hash.is_a?(Hash)
+
+    keys.each do |k|
+      value = hash[k] || hash[k.to_sym]
+      return value.to_s if value.present?
+    end
+    ""
+  end
+
+  def ensure_referral_code
+    return if referral_code.present?
+
+    loop do
+      candidate = SecureRandom.alphanumeric(8).upcase
+      unless User.exists?(referral_code: candidate)
+        self.referral_code = candidate
+        break
+      end
+    end
+  end
+
+  def self.ysws_ineligible?(identity)
+    status = identity["verification_status"].to_s
+    return true if status == "ineligible"
+
+    status == "verified" && identity["ysws_eligible"] != true
+  end
+
+  def self.determine_is_adult(identity)
+    birthday_str = identity["birthday"]
+    return false if birthday_str.blank?
+
+    begin
+      birthday = Date.parse(birthday_str)
+      age_today = (Date.today - birthday.to_date) / 365.25
+      age_today >= 19
+    rescue ArgumentError
+      false
+    end
+  end
+
+  def self.fetch_slack_user_info(slack_id)
+    return nil if slack_id.blank?
+
+    client = Slack::Web::Client.new(token: ENV.fetch("SLACK_BOT_TOKEN", nil))
+    retries = 0
+
+    begin
+      client.users_info(user: slack_id)
+    rescue Slack::Web::Api::Errors::TooManyRequestsError => e
+      if retries < 3
+        sleep e.retry_after
+        retries += 1
+        retry
+      end
+
+      Rails.logger.error("Slack API ratelimit, max retries on #{slack_id}.")
+      nil
+    rescue Slack::Web::Api::Errors::SlackError => e
+      Rails.logger.warn("Slack API error for #{slack_id}: #{e.message}")
+      nil
+    rescue StandardError => e
+      Rails.logger.warn("Slack API error for #{slack_id}: #{e.message}")
+      nil
+    end
+  end
+
+  def normalized_slack_id
+    return slack_id unless Rails.env.development?
+
+    slack_id.delete_suffix("_DEV")
+  end
+
+  def enqueue_guild_channel_invite
+    return if guild.blank?
+
+    SlackInviteToGuildChannelJob.perform_later(id)
+  end
+end

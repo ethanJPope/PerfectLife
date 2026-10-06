@@ -1,0 +1,8 @@
+﻿Group,Part,Qty,Unit_USD,Extended_USD,Price_status,Source_URL,Notes
+Electrical package,ESP KIT-137-B,1,368.45,368.45,observed listing; fit pending,https://cart.electricscooterparts.com/24-volt-500-watt-electric-go-kart-power-kit-KIT-137-B,Includes listed battery/charger/controller/motor/pedal/harness; confirm exact specs
+Donor running gear,TBD,1,100,100,target only - no listing,,Wheels axle bearings hubs steering brakes pedals and seat; inspection needed
+Frame and plates,TBD cut list,1,50,50,target only - no quote,https://www.metalsdepot.com/steel-products/steel-square-tube,Supplier category only; floor battery tray guards brackets included in target
+Chain and sprockets,TBD matched family,1,25,25,target only - no quote,,Bore key ratio chain standard and alignment unresolved
+Additional electrical hardware and consumables,TBD review,1,25,25,target only - no quote,,Shutdown protection connectors fasteners fabrication consumables
+Shipping and tax,TBD destination,1,60,60,allowance only,,No checkout quote
+TOTAL conditional scenario,,1,628.45,628.45,NOT PURCHASE READY,,Missing or unsuitable donor parts invalidate this total

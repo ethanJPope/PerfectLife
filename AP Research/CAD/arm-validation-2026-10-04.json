@@ -1,0 +1,515 @@
+{
+  "sampled_transitions": [
+    {
+      "segment": "floor-carry",
+      "fraction": 0.0,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.1,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.2,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.3,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.4,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.5,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.6,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.7,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.8,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 0.9,
+      "interferences": 0
+    },
+    {
+      "segment": "floor-carry",
+      "fraction": 1.0,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.0,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.1,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.2,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.3,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.4,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.5,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.6,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.7,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.8,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 0.9,
+      "interferences": 0
+    },
+    {
+      "segment": "carry-shelf",
+      "fraction": 1.0,
+      "interferences": 0
+    }
+  ],
+  "gripper_openings": [
+    {
+      "commanded_gap_mm": 0,
+      "measured_gaps_mm": [
+        -1.4210854715202004e-13,
+        0.0
+      ],
+      "interferences": 0
+    },
+    {
+      "commanded_gap_mm": 40,
+      "measured_gaps_mm": [
+        39.99999999999986,
+        40.0
+      ],
+      "interferences": 0
+    },
+    {
+      "commanded_gap_mm": 100,
+      "measured_gaps_mm": [
+        99.99999999999986,
+        100.0
+      ],
+      "interferences": 0
+    }
+  ],
+  "sketches": [
+    {
+      "component": "01_Base_Envelope",
+      "sketch": "Base_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "sketch": "Shoulder_Mount_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "sketch": "Pivot_Clearance_25p5mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "02_Mast_Envelope",
+      "sketch": "Mast_Envelope_Side_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "sketch": "Shared_Carriage_Side_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "sketch": "Upper_Link_304p8mm_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "sketch": "Pivot_Housing_Envelopes",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "sketch": "Fore_Link_304p8mm_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "sketch": "Pivot_Housing_Envelopes",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Left_Pad_Positive",
+      "sketch": "Soft_Pad_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Left_Finger_Positive",
+      "sketch": "Finger_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "sketch": "Palm_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "sketch": "Wrist_Sweep_Clearance_35p5mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Left_Finger_Negative",
+      "sketch": "Finger_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Left_Pad_Negative",
+      "sketch": "Soft_Pad_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "sketch": "Shoulder_Mount_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "sketch": "Pivot_Clearance_25p5mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "sketch": "Upper_Link_304p8mm_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "sketch": "Pivot_Housing_Envelopes",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "sketch": "Palm_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "sketch": "Wrist_Sweep_Clearance_35p5mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Right_Finger_Positive",
+      "sketch": "Finger_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "sketch": "Fore_Link_304p8mm_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "sketch": "Joint_Axis_Locations",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "sketch": "Pivot_Housing_Envelopes",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Right_Pad_Negative",
+      "sketch": "Soft_Pad_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Right_Finger_Negative",
+      "sketch": "Finger_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Right_Pad_Positive",
+      "sketch": "Soft_Pad_Envelope_Profile",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "sketch": "Layout_Side",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "sketch": "Reach_Left_Floor_2x304p8mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "sketch": "Reach_Left_Shelf_2x304p8mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "sketch": "Reach_Right_Floor_2x304p8mm",
+      "fully_constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "sketch": "Reach_Right_Shelf_2x304p8mm",
+      "fully_constrained": true,
+      "health": 0
+    }
+  ],
+  "features": [
+    {
+      "name": "Chassis_Width_450mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Shoulder_Mount",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Mast_Envelope_Width_140mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Shared_Carriage_Width_660mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Upper_Link_304p8mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Fore_Link_304p8mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Finger_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Palm_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Finger_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Shoulder_Mount",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Upper_Link_304p8mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Palm_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Finger_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Fore_Link_304p8mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Finger_Envelope",
+      "health": 0,
+      "warning": ""
+    },
+    {
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "warning": ""
+    }
+  ],
+  "user_parameters": 0,
+  "compute_all": true,
+  "limitations": [
+    "Discrete samples only, not continuous collision certification.",
+    "No object, shelf solid, actuator, bearing, shaft, cable or structural validation.",
+    "Sagittal pitch arms; no shoulder yaw.",
+    "609.6 mm link-center reach plus 110 mm grip-center offset."
+  ]
+}

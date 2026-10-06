@@ -1,0 +1,416 @@
+# == Schema Information
+#
+# Table name: projects
+#
+#  id                           :bigint           not null, primary key
+#  ai_check_ran_at              :datetime
+#  ai_check_result              :jsonb
+#  ai_usage                     :text
+#  approval_justification       :text
+#  budget                       :text
+#  build_proof_url              :string
+#  build_review                 :boolean          default(FALSE), not null
+#  built_at                     :datetime
+#  coins_awarded                :decimal(10, 2)
+#  cover_image_url              :string
+#  description                  :text
+#  devlog_mode                  :string
+#  discarded_at                 :datetime
+#  flag_reason                  :text
+#  flagged_for_review_at        :datetime
+#  green_flags                  :string           default([]), is an Array
+#  hackatime_projects           :string           default([]), not null, is an Array
+#  hidden                       :boolean          default(FALSE), not null
+#  journal_branch               :string
+#  journal_parse_failed         :boolean          default(FALSE), not null
+#  journal_synced_at            :datetime
+#  kudos_count                  :integer          default(0), not null
+#  name                         :string           not null
+#  override_hours               :decimal(, )
+#  override_hours_justification :text
+#  pitch_text                   :text
+#  readme_cache                 :text
+#  readme_fetched_at            :datetime
+#  red_flags                    :string           default([]), is an Array
+#  repo_link                    :string
+#  requirements_check_items     :jsonb            not null
+#  requirements_checked_at      :datetime
+#  review_feedback              :text
+#  reviewed_at                  :datetime
+#  reviewed_commit_sha          :string
+#  shadow_banned                :boolean          default(FALSE), not null
+#  slack_message_ts             :string
+#  staff_pick_at                :datetime
+#  status                       :integer          default("draft"), not null
+#  streak_at_approval           :integer
+#  streaks_at_submission        :jsonb            not null
+#  submitted_at                 :datetime
+#  subtitle                     :string
+#  tags                         :string           default([]), not null, is an Array
+#  tier                         :string           default("tier_4"), not null
+#  uses_ai                      :boolean          default(FALSE), not null
+#  views_count                  :integer          default(0), not null
+#  created_at                   :datetime         not null
+#  updated_at                   :datetime         not null
+#  flagged_by_id                :bigint
+#  linked_project_id            :bigint
+#  requirements_checked_by_id   :bigint
+#  reviewer_id                  :bigint
+#  slack_channel_id             :string
+#  user_id                      :bigint           not null
+#
+# Indexes
+#
+#  index_projects_on_discarded_at                         (discarded_at)
+#  index_projects_on_flagged_by_id                        (flagged_by_id)
+#  index_projects_on_flagged_for_review_at                (flagged_for_review_at)
+#  index_projects_on_linked_project_id_for_build_reviews  (linked_project_id) UNIQUE WHERE (build_review = true)
+#  index_projects_on_requirements_checked_at              (requirements_checked_at)
+#  index_projects_on_requirements_checked_by_id           (requirements_checked_by_id)
+#  index_projects_on_staff_pick_at                        (staff_pick_at)
+#  index_projects_on_status                               (status)
+#  index_projects_on_submitted_at                         (submitted_at)
+#  index_projects_on_tags                                 (tags) USING gin
+#  index_projects_on_user_id                              (user_id)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (flagged_by_id => users.id)
+#  fk_rails_...  (linked_project_id => projects.id)
+#  fk_rails_...  (requirements_checked_by_id => users.id)
+#  fk_rails_...  (reviewer_id => users.id)
+#  fk_rails_...  (user_id => users.id)
+#
+class Project < ApplicationRecord
+  include Discardable
+  include PgSearch::Model
+
+  has_paper_trail
+
+  pg_search_scope :search, against: [ :name, :description ], using: { tsearch: { prefix: true } }
+
+  belongs_to :user
+  belongs_to :reviewer, class_name: "User", optional: true
+  belongs_to :flagged_by, class_name: "User", optional: true
+  belongs_to :requirements_checked_by, class_name: "User", optional: true
+  belongs_to :linked_project, class_name: "Project", optional: true
+  has_one :build_review_for_project, class_name: "Project", foreign_key: :linked_project_id, dependent: :nullify, inverse_of: :linked_project
+  has_many :ships, dependent: :destroy
+  has_many :devlogs, dependent: :destroy
+  has_many :orphaned_lapse_links, dependent: :destroy
+  has_many :airtable_queue_items, dependent: :destroy
+  has_many :kudos, dependent: :destroy
+  has_many :project_notes, dependent: :destroy
+  has_many :reels, dependent: :destroy
+  has_many :review_sessions, dependent: :destroy
+  has_many :project_views, dependent: :destroy
+  has_many :project_collaborators, dependent: :destroy
+  has_many :collaborators, through: :project_collaborators, source: :user
+  has_many :collaboration_invites, dependent: :destroy
+  has_many :project_payouts, dependent: :destroy
+  has_one_attached :cover_image
+
+  after_commit :sync_to_airtable, on: [ :create, :update ], if: -> { approved? && saved_change_to_status? && !airtable_sent? }
+  after_update_commit :maybe_award_orph_quest, if: :saved_change_to_status?
+  after_update_commit :process_cover_image_upload, if: -> { cover_image.attached? && cover_image_url.blank? }
+
+  enum :status, { draft: 0, pending: 1, approved: 2, returned: 3, rejected: 4, pitch_approved: 7, pitch_pending: 8 }
+
+  MAX_TEAM_SIZE = 5 # owner + 4 collaborators
+
+  TIERS = %w[tier_1 tier_2 tier_3 tier_4].freeze
+  BUILD_REVIEW_TIER = "tier_build_review"
+  ALL_TIERS = (TIERS + [ BUILD_REVIEW_TIER ]).freeze
+  TIER_COIN_RATES = {
+    "tier_1" => 7.5,
+    "tier_2" => 6.5,
+    "tier_3" => 5.0,
+    "tier_4" => 4.5,
+    BUILD_REVIEW_TIER => 5.0
+  }.freeze
+
+  before_validation :normalize_hackatime_projects
+
+  validates :name, presence: true
+  validates :repo_link, format: { with: /\Ahttps?:\/\/\S+\z/i, message: "must be a valid URL starting with http:// or https://" }, allow_blank: true
+  validates :tier, inclusion: { in: ALL_TIERS }
+  validate :build_review_consistency
+  validate :linked_project_must_be_approved_and_owned
+
+  # Build reviews carry tier_build_review, so for review routing they inherit
+  # the tier of the design project they're linked to (tier_4 when unlinked).
+  REVIEW_TIER_SQL = "CASE WHEN projects.build_review THEN COALESCE((SELECT linked.tier FROM projects linked WHERE linked.id = projects.linked_project_id), 'tier_4') ELSE projects.tier END".freeze
+
+  scope :reviewable, -> { where(status: :pending) }
+  scope :for_review_tier, ->(tier) { where("#{REVIEW_TIER_SQL} = ?", tier) }
+  scope :staff_picks, -> { where.not(staff_pick_at: nil).order(staff_pick_at: :desc) }
+  scope :build_reviews, -> { where(build_review: true) }
+  scope :flagged_for_review, -> { where.not(flagged_for_review_at: nil) }
+  scope :not_flagged_for_review, -> { where(flagged_for_review_at: nil) }
+  scope :requirements_checked, -> { where.not(requirements_checked_at: nil) }
+  scope :requirements_unchecked, -> { where(requirements_checked_at: nil) }
+  # Shadow-banned projects stay fully visible everywhere, but their hours are
+  # excluded from the public leaderboard and admin metrics aggregates.
+  scope :not_shadow_banned, -> { where(shadow_banned: false) }
+
+  def self.fair_feed
+    all.sort_by { |p| -p.feed_score }
+  end
+
+  def feed_score
+    age_hours = [ (Time.current - created_at) / 1.hour, 0.1 ].max
+    engagement = views_count + (kudos_count * 10) + (ships.size * 5)
+    engagement_rate = engagement / age_hours
+
+    freshness = age_hours < 24 ? (5.0 - (4.0 * age_hours / 24)) : 1.0
+
+    base = engagement_rate * freshness
+    base * (1.0 + rand * 0.3)
+  end
+
+  def staff_pick?
+    staff_pick_at.present?
+  end
+
+  def flagged_for_review?
+    flagged_for_review_at.present?
+  end
+
+  def built?
+    built_at.present?
+  end
+
+  def airtable_sent?
+    airtable_queue_items.where(status: AirtableQueueItem.statuses[:sent]).exists?
+  end
+
+  def has_fulfilled_direct_grant?
+    Order.where(project_id: id, kind: "direct_grant").where.not(status: :rejected).exists?
+  end
+
+  def submit_for_review!
+    update!(status: :pending, submitted_at: Time.current, **cleared_requirements_check)
+  end
+
+  def requirements_checked?
+    requirements_checked_at.present?
+  end
+
+  def clear_requirements_check!
+    update!(cleared_requirements_check)
+  end
+
+  def reviewable?
+    draft? || returned? || pitch_approved?
+  end
+
+  AI_CHECK_STALE_AFTER = 4.minutes
+
+  def ai_check_stale?
+    result = ai_check_result
+    return false unless result.is_a?(Hash) && %w[queued running].include?(result["status"])
+
+    stamped_at = Time.zone.parse((result["started_at"] || result["queued_at"]).to_s)
+    stamped_at.nil? || stamped_at <= AI_CHECK_STALE_AFTER.ago
+  end
+
+  def ai_check_result_for_display
+    result = ai_check_result
+    return result unless result.is_a?(Hash)
+
+    if ai_check_stale?
+      return result.merge("status" => "error", "message" => "This check stalled before finishing — run it again.")
+    end
+
+    # Results written before the status field existed carry a full verdict but
+    # no status. The pre-submission page keys its rendering off status, so those
+    # rows produced a page with no spinner, no results and no re-run button. A
+    # result with a verdict is finished, whatever it is missing.
+    return result.merge("status" => "done") if result["status"].blank? && result["overall"].present?
+
+    result
+  end
+
+  def advanced?
+    tier == "tier_1"
+  end
+
+  def normal?
+    tier != "tier_1"
+  end
+
+  def review_tier
+    return tier unless build_review?
+
+    linked_project&.tier || TIERS.last
+  end
+
+  def coin_rate
+    TIER_COIN_RATES[tier] || 0.0
+  end
+
+  def devlog_hours
+    devlogs.sum(&:parsed_hours)
+  end
+
+  def total_hours
+    return override_hours.to_f if override_hours.present?
+
+    devlog_hours
+  end
+
+  def coins_earned
+    return 0.0 unless approved?
+    return coins_awarded.to_f if coins_awarded.present?
+
+    computed_coins
+  end
+
+  # Solo-project coin computation (owner's multipliers). Group projects bypass
+  # this: their total is the sum of per-member ProjectPayout shares, computed
+  # by ProjectPayoutCalculator at approval time.
+  def computed_coins
+    return 0.0 unless approved?
+
+    multiplier = streak_at_approval ? user.streak_multiplier(streak_at_approval) : user.streak_multiplier
+    guild_multiplier = GuildState.multiplier_for(user.guild)
+    (total_hours * coin_rate * multiplier * guild_multiplier).round(2)
+  end
+
+  def members
+    [ user ] + collaborators
+  end
+
+  def member?(other)
+    other.present? && (user_id == other.id || project_collaborators.exists?(user_id: other.id))
+  end
+
+  # A project pays out per-member when anyone besides the owner is (or was)
+  # involved — collaborator rows or devlogs authored by someone else.
+  def group_project?
+    project_collaborators.exists? || devlogs.where.not(user_id: user_id).exists?
+  end
+
+  REVIEW_EVENT_ACTIONS = %w[
+    project.pitch_approved project.approved project.returned project.rejected project.reverted_to_draft
+    project.build_approved project.build_returned project.build_rejected
+    project.submitted_for_review project.review_reversed
+    devlog.approved devlog.returned
+  ].freeze
+
+  ADMIN_REVIEW_EVENT_ACTIONS = (REVIEW_EVENT_ACTIONS + %w[project.tier_changed]).freeze
+
+  # Decisions whose feedback gets relayed to the builder in #forge-checkpoint.
+  RETURNED_REVIEW_ACTIONS = %w[project.returned project.build_returned].freeze
+
+  # How far apart a return and its checkpoint message may be and still be paired.
+  CHECKPOINT_MATCH_WINDOW = 6.hours
+
+  def review_history(actions: REVIEW_EVENT_ACTIONS)
+    AuditEvent
+      .includes(:actor)
+      .where(action: actions)
+      .where("(target_type = 'Project' AND target_id = :id) OR (metadata @> :meta::jsonb)",
+             id: id, meta: { project_id: id }.to_json)
+      .order(created_at: :desc)
+  end
+
+  def admin_review_history
+    review_history(actions: ADMIN_REVIEW_EVENT_ACTIONS)
+  end
+
+  # Permalink to the Slack thread the pitch was posted in; reviewer decisions are
+  # posted as replies there.
+  def slack_thread_url
+    self.class.slack_message_url(slack_channel_id, slack_message_ts)
+  end
+
+  def self.slack_message_url(channel_id, message_ts)
+    return nil if channel_id.blank? || message_ts.blank?
+
+    "https://hackclub.slack.com/archives/#{channel_id}/p#{message_ts.to_s.delete('.')}"
+  end
+
+  # Links each "returned" review event to the #forge-checkpoint message that carried
+  # its feedback to the builder, keyed by event id. Reviewers send that message from
+  # the review UI moments before or after recording the decision and the two aren't
+  # linked in the database, so each return is paired with the nearest unclaimed
+  # checkpoint message in time.
+  def checkpoint_urls_for(events)
+    returns = events.select { |e| RETURNED_REVIEW_ACTIONS.include?(e.action) }
+    return {} if returns.empty?
+
+    checkpoints = AuditEvent
+      .for_action("project.checkpoint_message_sent")
+      .for_target("Project", id)
+      .to_a
+      .select { |c| c.metadata["message_ts"].present? }
+    return {} if checkpoints.empty?
+
+    urls = {}
+    claimed = Set.new
+    returns
+      .product(checkpoints)
+      .map { |ret, checkpoint| [ (ret.created_at - checkpoint.created_at).abs, ret, checkpoint ] }
+      .sort_by { |distance, ret, _| [ distance, ret.id ] }
+      .each do |distance, ret, checkpoint|
+        next if distance > CHECKPOINT_MATCH_WINDOW || urls.key?(ret.id) || claimed.include?(checkpoint.id)
+
+        urls[ret.id] = self.class.slack_message_url(checkpoint.metadata["channel_id"], checkpoint.metadata["message_ts"])
+        claimed << checkpoint.id
+      end
+    urls.compact
+  end
+
+  private
+
+  def cleared_requirements_check
+    { requirements_checked_at: nil, requirements_checked_by: nil, requirements_check_items: [] }
+  end
+
+  def build_review_consistency
+    if build_review? && tier != BUILD_REVIEW_TIER
+      errors.add(:tier, "must be #{BUILD_REVIEW_TIER} for build reviews")
+    elsif !build_review? && tier == BUILD_REVIEW_TIER
+      errors.add(:tier, "tier_build_review is only valid for build reviews")
+    end
+  end
+
+  def linked_project_must_be_approved_and_owned
+    return if linked_project_id.blank?
+
+    unless build_review?
+      errors.add(:linked_project_id, "can only be set on build reviews")
+      return
+    end
+
+    target = linked_project
+    if target.nil?
+      errors.add(:linked_project_id, "not found")
+    elsif target.build_review?
+      errors.add(:linked_project_id, "cannot link to another build review")
+    elsif target.user_id != user_id
+      errors.add(:linked_project_id, "must be your own project")
+    elsif !target.approved?
+      errors.add(:linked_project_id, "must be an approved project")
+    end
+  end
+
+  def sync_to_airtable
+    AirtableSyncJob.perform_later(id)
+  end
+
+  def maybe_award_orph_quest
+    return unless approved?
+
+    Badge.award_orph_quest!(user)
+  end
+
+  def process_cover_image_upload
+    UploadCoverImageJob.perform_later(id)
+  end
+
+  def normalize_hackatime_projects
+    self.hackatime_projects = Array(hackatime_projects).map { |name| name.to_s.strip }.reject(&:blank?).uniq
+  end
+end

@@ -1,0 +1,423 @@
+{
+  "title": "Ethan’s skill library — first-pass audit",
+  "coverage": "2026-09-20. 163 SKILL.md files scanned: all 157 advertised paths plus 6 disk-discovered files. 0 read/parse errors; 0 exact duplicate groups; 16 lexical-overlap pairs; 717 instruction signals; 469 prose local-reference occurrences. One reference required manual resolution and is verified broken. Usage unknown.",
+  "summary": "One verified link repair is proposed, not applied. One demo-skill relevance decision is yours to review. Three test groups are ranked next and three are deferred. No installed skills were changed, no conversation history was read, and no benchmarks or target workflows were run.",
+  "findings": [
+    {
+      "skill": "unity-editor",
+      "recommendation": "revise",
+      "strength": "observed defect",
+      "finding": "The Pause On Error cross-reference points to /E:/CodeSpace/... rather than this installation. The corresponding E: target does not exist here; ../console/SKILL.md exists and documents the named operation. Proposed repair: replace only the link target with ../console/SKILL.md. No repair has been applied.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\editor\\SKILL.md",
+          "line": 191,
+          "excerpt": "Use `console_set_pause_on_error` from [console/SKILL.md](/E:/CodeSpace/Unity-Skills/SkillsForUnity/unity-skills~/skills/console/SKILL.md)."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\console\\SKILL.md",
+          "line": 91,
+          "excerpt": "### `console_set_pause_on_error`"
+        }
+      ],
+      "preserve": "The console ownership of pause-on-error, operating-mode restrictions, and the documented operation name."
+    },
+    {
+      "skill": "ai-prompt-orchestrator",
+      "recommendation": "insufficient evidence",
+      "strength": "inspection hypothesis",
+      "finding": "The installed package contains SKILL.md and plugin/MCP configuration, but no package.json or evidence validator. Three required pnpm validate:evidence gates provide no working directory or helper-resolution instructions. The prepare_review tool is advertised, but its server-controlled plan was deliberately not requested. The validator may live elsewhere; this is an unresolved dependency, not proof that the workflow cannot run. Resolve the helper before comparing the mandatory ten-reviewer process.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\personal\\ai-prompt-orchestrator\\0.3.0+codex.20260804235256\\skills\\ai-prompt-orchestrator\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use for substantive coding requests to improve the task, consolidate clarifying questions, and run a fast server-selected minimum-ten read-only review pipeline before returning the final result. Visual interface work includes screenshot-grounded design review. Skip minor follow-ups, confirmations, explanations, and status checks."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\personal\\ai-prompt-orchestrator\\0.3.0+codex.20260804235256\\skills\\ai-prompt-orchestrator\\SKILL.md",
+          "line": 19,
+          "excerpt": "10. Before the visual wave, run `pnpm validate:evidence <packet.json> --plan=<returned-review-plan.json> --phase=before-visual`. Treat failure as blocked and do not dispatch visual reviewers until the packet is repaired."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\personal\\ai-prompt-orchestrator\\0.3.0+codex.20260804235256\\skills\\ai-prompt-orchestrator\\SKILL.md",
+          "line": 21,
+          "excerpt": "12. After all specialist outcomes are appended, run `pnpm validate:evidence <packet.json> --plan=<returned-review-plan.json> --phase=before-arbiter`. Give the final senior-engineer assignment the shared findings packet and deterministic gate results; it must not repeat broad repository discovery unless there is a contradiction or evidence gap."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\personal\\ai-prompt-orchestrator\\0.3.0+codex.20260804235256\\skills\\ai-prompt-orchestrator\\SKILL.md",
+          "line": 24,
+          "excerpt": "15. Before finalizing, run `pnpm validate:evidence <packet.json> --plan=<returned-review-plan.json> --phase=final`. Treat a failed or incomplete gate, stale screenshot, missing reviewer outcome, or non-ready final status as blocked; do not report the task as clean."
+        }
+      ],
+      "preserve": "Single writer, bounded repair pass, screenshot freshness, short evidence-backed findings, and restrictions on sending source or sensitive content to the server."
+    },
+    {
+      "skill": "unity-skills + unity-mcp-workflow",
+      "recommendation": "evaluate",
+      "strength": "inspection hypothesis",
+      "finding": "Both can attract Unity automation requests. UnitySkills explicitly supports an existing REST bridge and manual guidance; the workbench flow frames editor access around MCP detection. Its instruction to reuse existing providers helps, but a REST-only project could still get unnecessary MCP setup guidance. This routing risk needs a representative fixture, not automatic consolidation.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\SKILL.md",
+          "line": 13,
+          "excerpt": "- **Automate** — you call REST skills and drive the Editor yourself. Stay here when the user asked you to do it, or the task needs traversal, search, batch, exact numeric values, or consistency across many objects."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\SKILL.md",
+          "line": 14,
+          "excerpt": "- **Guide** — you name the menus and Inspector fields and write nothing through REST. Switch to [SKILL_GUIDE.md](SKILL_GUIDE.md) (guidance boundary table + `manual-*` routing) when the user asked how to do it themselves, **or** `/health` reports a `surfaceProfile` other than `full`."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\unity-workbench\\0.1.3\\skills\\unity-mcp-workflow\\SKILL.md",
+          "line": 39,
+          "excerpt": "If a Unity MCP is already installed, do not recommend adding another one by default. Prefer using and validating the existing bridge first. Multiple Unity MCP bridges can duplicate tools, confuse tool selection, increase token usage, and make debugging harder."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\unity-workbench\\0.1.3\\skills\\unity-mcp-workflow\\SKILL.md",
+          "line": 41,
+          "excerpt": "If no MCP evidence is found, state that no Unity MCP was detected and ask whether the user wants to add one. If they do, guide them through choosing exactly one provider that fits their situation. If they do not, continue with repository-only workflows and clearly report that Unity Editor actions, console reads, scene inspection through the Editor, and live validation are unavailable."
+        }
+      ],
+      "preserve": "Discover the existing bridge, validate live state, respect surface profiles, and preserve the learning-versus-automation distinction."
+    },
+    {
+      "skill": "stripe-directory",
+      "recommendation": "evaluate",
+      "strength": "inspection hypothesis",
+      "finding": "The trigger covers essentially any vendor or software search, including requests that never mention Stripe. Ranking also favors Stripe-related trust signals. This may narrow general recommendations unnecessarily, although it can be useful for Stripe-specific discovery. Test routing and shortlist relevance before deciding whether to narrow the trigger.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\stripe\\7.0.0\\skills\\stripe-directory\\SKILL.md",
+          "line": 18,
+          "excerpt": "Turn a vague market need into a short, relevant shortlist with `stripe directory search`. Use this even when the user never says “Stripe Directory” — any request to find vendors, tools, partners, or providers for a vertical, workflow, pain point, or job-to-be-done."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\stripe\\7.0.0\\skills\\stripe-directory\\SKILL.md",
+          "line": 39,
+          "excerpt": "   - Prefer more trust signals over fewer: Projects provider, Link enabled, Marketplace app, Stripe Verified. For buy/use intent, also prefer MPP-supported results."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\stripe\\7.0.0\\skills\\stripe-directory\\SKILL.md",
+          "line": 65,
+          "excerpt": "**Always show the price and get explicit user approval before any money moves**; prefer a no-charge test path first."
+        }
+      ],
+      "preserve": "Exact search-query disclosure, honest handling of weak results, explicit purchase approval, and no-charge options. Ethan’s purchase and guardian checkpoints remain controlling."
+    },
+    {
+      "skill": "canva-edit-design + canva-implement-feedback",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "The approval flags are not a demonstrated double-approval defect: the edit skill explicitly lets a composing skill’s prior batch approval cover commit. Feedback editing uses that exception. Preserve it. The feedback workflow also replies to reviewers; any future test must include those external messages in the approved scope or use a mock, rather than treating them as silent bookkeeping.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\canva\\15.0.0\\skills\\canva-edit-design\\SKILL.md",
+          "line": 46,
+          "excerpt": "`commit-editing-transaction` makes changes permanent. You MUST show the user exactly what changed (and the preview thumbnail) and get explicit approval before committing — e.g. \"Here's the preview. Save these changes to your design?\" Wait for a clear yes."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\canva\\15.0.0\\skills\\canva-edit-design\\SKILL.md",
+          "line": 53,
+          "excerpt": "> Note for composing skills: a skill that already collects a single up-front approval for a batch of changes (e.g. `canva-implement-feedback`) should treat that approval as covering the commit and NOT ask again. Follow that skill's own confirmation rules; the gate above is the default for direct, ad-hoc edits."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\canva\\15.0.0\\skills\\canva-implement-feedback\\SKILL.md",
+          "line": 71,
+          "excerpt": "**Do NOT ask the user again.** They already approved. Execute all of these in sequence immediately:"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\canva\\15.0.0\\skills\\canva-implement-feedback\\SKILL.md",
+          "line": 100,
+          "excerpt": "- After committing, call `Canva:reply-to-comment` on each actionable thread to note what was changed"
+        }
+      ],
+      "preserve": "Transaction identifiers, preview-before-save, responsive-page restrictions, clear distinction between drafts and saved changes, and one approval for the approved scope."
+    },
+    {
+      "skill": "unity-sample",
+      "recommendation": "investigate overlap",
+      "strength": "inspection hypothesis",
+      "finding": "This is an explicit demo/connectivity module. It tells callers to use the production GameObject module and the Python health helper for actual work. Ethan can decide whether first-call demos are still useful. If not, consider removing it from the advertised set while preserving package examples and updating the module index; do not delete a managed package component in isolation.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\sample\\SKILL.md",
+          "line": 30,
+          "excerpt": "- Sample skills are basic test/demo skills — do not use them for production work"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\sample\\SKILL.md",
+          "line": 35,
+          "excerpt": "- For actual GameObject operations → use `gameobject` module"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\sample\\SKILL.md",
+          "line": 36,
+          "excerpt": "- For server health check → use Python helper's `unity_skills.health()`"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\SKILL.md",
+          "line": 75,
+          "excerpt": "Every skill is named `module_verb`, so the prefix is the routing key. `GET /skills/recommend?intent=...` ranks candidates, or read the index — all 80 modules with mode labels, incl. docs-only ones (`manual-*`, `*-design`, `unity-cli`) that define no REST skills → [module index](skills/SKILL.md)."
+        }
+      ],
+      "preserve": "Connectivity examples and restrictions against using demos for production or bypassing surface profiles."
+    },
+    {
+      "skill": "Unity design specialists",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "The six flagged lexical pairs in this family reflect common source-anchored wording across different libraries. Addressables/YooAsset manage assets, DOTween/PrimeTween manage tweens, Netcode addresses multiplayer, UniTask addresses async work, and Shader Graph addresses rendering. Shared vocabulary is not duplicate behavior. Keep version scopes and source anchors, but do not treat the cited underlying API claims as revalidated by this audit.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\addressables-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for Unity Addressables 1.22.3/2.9.1"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\dotween-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for DOTween 1.3.015"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\primetween-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for PrimeTween 1.4.6"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\yooasset-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for YooAsset v2.3.18"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\netcode-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for Netcode for GameObjects 2.x"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\unitask-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored design rules for UniTask 2.5.10"
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\shadergraph-design\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Source-anchored Shader Graph design rules for Unity 2022.3"
+        }
+      ],
+      "preserve": "Library-specific terminology, version boundaries, lifecycle pitfalls, and source references."
+    },
+    {
+      "skill": "Security phase skills",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "Nine lexical-overlap pairs have distinct purposes: threat modeling, discovery, validation, attack-path analysis, and fixing findings. Their descriptions exclude primary full-scan routing. The phase boundaries explain the similar text; this first pass does not justify merging or retiring them.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\codex-security\\0.1.24\\skills\\attack-path-analysis\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use when Codex is already in the attack-path-analysis phase of a security scan or the user explicitly asks to trace a security finding from source to sink and calibrate severity. Do not use as the primary trigger for full PR, commit, branch, patch, or repository scans."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\codex-security\\0.1.24\\skills\\finding-discovery\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use when Codex is already in the finding-discovery phase of a security scan or the user explicitly asks to discover candidate security findings in a repository or code change. Do not use as the primary trigger for full PR, commit, branch, patch, or repository scans."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\codex-security\\0.1.24\\skills\\threat-model\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use when Codex is already in the threat-modeling phase of a security scan, the user explicitly invokes $threat-model, or the user explicitly asks to create, update, or persist a repository threat model. Do not use as the primary trigger for full PR, commit, branch, patch, or repository scans."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\codex-security\\0.1.24\\skills\\validation\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use when Codex is already in the validation phase of a security scan or the user explicitly asks to determine whether one or more candidate security findings are valid. Do not use as the primary trigger for full PR, commit, branch, patch, or repository scans."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\codex-security\\0.1.24\\skills\\fix-finding\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use when the user explicitly asks to fix and verify a validated or plausible security finding. Do not use as the primary trigger for full PR, commit, branch, patch, or repository scans."
+        }
+      ],
+      "preserve": "Explicit phase boundaries, evidence versus hypothesis, source-to-sink reasoning, and verification of legitimate behavior after repairs."
+    },
+    {
+      "skill": "convert-to-doc + convert-to-slides",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "These two disk-discovered helpers are not advertised in the supplied session catalog. Their lexical overlap is expected: they preserve an existing Data app but produce different artifact types using different canonical authoring skills. Their presence does not establish standalone activation or precedence.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\convert-to-doc\\SKILL.md",
+          "line": 26,
+          "excerpt": "- Create a DOCX file with the [@documents](plugin://documents@openai-primary-runtime) plugin and match the final output format to the request."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\convert-to-slides\\SKILL.md",
+          "line": 26,
+          "excerpt": "- Create a PPTX file with the [@presentations](plugin://presentations@openai-primary-runtime) plugin and match the final output format to the request."
+        }
+      ],
+      "preserve": "Source-data and chart preservation, native artifact formats, and explicit read-back verification."
+    },
+    {
+      "skill": "comfy",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "The trigger is explicitly limited to local ComfyUI work. Workspace discovery, workflow validation, and consent for large downloads are useful boundaries. Tool names for discovery are advertised in this session; no service availability or workflow execution was tested.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\skills\\comfy\\SKILL.md",
+          "line": 3,
+          "excerpt": "description: Use the local ComfyUI installation through the comfy-mcp server to inspect models and nodes, find templates, validate or run workflows, and retrieve generated outputs. Apply when the user explicitly invokes $comfy or asks to work with their local ComfyUI."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\skills\\comfy\\SKILL.md",
+          "line": 12,
+          "excerpt": "- Use the workspace selected by `comfy-cli`. Do not invent or replace the default workspace."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\skills\\comfy\\SKILL.md",
+          "line": 14,
+          "excerpt": "- Validate a workflow against the live installation before a long generation when `validate_workflow` is available."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\skills\\comfy\\SKILL.md",
+          "line": 16,
+          "excerpt": "- Ask before downloading large models, installing custom nodes, spending credits, using partner or cloud services, or stopping unrelated running work."
+        }
+      ],
+      "preserve": "Local-versus-cloud separation, reuse of the selected workspace, validation before long generation, and protection of unrelated running work."
+    },
+    {
+      "skill": "unity-manual-scene",
+      "recommendation": "keep",
+      "strength": "contextually inspected strength",
+      "finding": "Manual scene guidance has a distinct teaching role and should not be retired as a duplicate of automation. It matches Ethan’s preference to preserve learning attempts. The parent router explicitly distinguishes guide versus automate.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\manual-scene\\SKILL.md",
+          "line": 14,
+          "excerpt": "Step-by-step instructions for Scene view navigation and scene management inside the Unity Editor. Paths assume the default English Unity UI; translate the labels into the user's Unity language when replying."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\skills\\manual-scene\\SKILL.md",
+          "line": 18,
+          "excerpt": "Guide manually when the user can finish the task in **3 clicks or fewer**: orbiting the view, saving, setting a scene active, or loading one additive scene."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.agents\\skills\\unity-skills\\SKILL.md",
+          "line": 14,
+          "excerpt": "- **Guide** — you name the menus and Inspector fields and write nothing through REST. Switch to [SKILL_GUIDE.md](SKILL_GUIDE.md) (guidance boundary table + `manual-*` routing) when the user asked how to do it themselves, **or** `/health` reports a `surfaceProfile` other than `full`."
+        }
+      ],
+      "preserve": "Visible UI steps and manual guidance; deliver one step at a time under Ethan’s working agreements."
+    },
+    {
+      "skill": "stripe-best-practices",
+      "recommendation": "insufficient evidence",
+      "strength": "inspection hypothesis",
+      "finding": "The file labels pinned API and SDK values as latest and says to use the latest version by default. This audit does not assert that those values are stale. A later compatibility test should check whether an existing pinned integration is preserved unless an upgrade is actually required, using current official documentation at that time.",
+      "evidence": [
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\stripe\\7.0.0\\skills\\stripe-best-practices\\SKILL.md",
+          "line": 17,
+          "excerpt": "Latest Stripe API version: **2026-07-29.dahlia**. Always use the latest API version and SDK unless the user specifies otherwise."
+        },
+        {
+          "path": "C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\stripe\\7.0.0\\skills\\stripe-best-practices\\SKILL.md",
+          "line": 19,
+          "excerpt": "Latest SDK versions:"
+        }
+      ],
+      "preserve": "Integration-specific guidance and security controls; do not turn a static audit into a payment or account action."
+    }
+  ],
+  "action_plan": {
+    "fix_now": [
+      {
+        "skill": "unity-editor — one verified repair, unapplied",
+        "reason": "Replace the developer-drive console link at line 191 with ../console/SKILL.md. The installed destination and operation were verified. No benchmark is needed for this link repair."
+      }
+    ],
+    "review_retirement": [
+      {
+        "skill": "unity-sample — user relevance decision",
+        "reason": "Do you still need first-call REST demos? If yes, retain. If no, consider hiding the demo entry from discovery while preserving examples and updating callers. Usage is unknown; this is not an obsolescence verdict."
+      }
+    ],
+    "test_next": [
+      {
+        "skill": "1. Unity routing: unity-skills + unity-mcp-workflow",
+        "reason": "Question: can both coexist without recommending a second bridge or taking over a learning task? Decision: keep both unchanged or clarify their entry conditions.",
+        "task": "Use a disposable UnitySkills REST-only fixture: ask to inspect a scene hierarchy, then separately ask to learn how to frame and save a scene manually. Compare current routing with a narrower router and a no-skill baseline.",
+        "success_criteria": "Recognize the existing REST bridge; propose no unnecessary install; keep the tutorial to one visible action at a time; make no editor writes for the teaching task."
+      },
+      {
+        "skill": "2. stripe-directory",
+        "reason": "Question: does its broad trigger improve ordinary software discovery or bias it toward the Stripe ecosystem? Decision: retain the broad trigger or narrow it.",
+        "task": "Use two supplied, non-sensitive briefs: compare offline-first note tools with no payment needs, and find a Stripe-compatible billing provider. Compare current, Stripe-only trigger, and baseline under equal research budgets.",
+        "success_criteria": "Meet all brief constraints; cite relevant sources; label coverage limits; avoid unnecessary Stripe routing in the general case; no purchases, sign-ins, or account changes."
+      },
+      {
+        "skill": "3. Canva edit/feedback composition",
+        "reason": "Question: does the explicit approval exception work in practice while preserving previews and message authorization? Decision: retain current composition or simplify duplicated procedure text.",
+        "task": "Use mocked Canva responses for one typo fix and one approved batch of comments, including an unsupported font-family request and a responsive page. Compare current, simplified, and baseline workflows.",
+        "success_criteria": "Exactly the approved edit scope; no unsupported operations; no repeated commit approval after a valid batch approval; no claim of saving before commit success; no reviewer replies without approved message scope."
+      }
+    ],
+    "test_later": [
+      {
+        "skill": "ai-prompt-orchestrator",
+        "reason": "Question: does the ten-reviewer process find consequential defects beyond a smaller review or baseline at acceptable cost?",
+        "task": "After dependency resolution, use a synthetic small code repair and a responsive UI change with seeded functional and visual defects; compare original, simplified review, and baseline in isolated contexts.",
+        "success_criteria": "Find seeded defects without regressions; validate evidence freshness; record actual timing and unknown telemetry honestly; preserve the single writer and privacy limits.",
+        "prerequisite": "Locate and inspect the validator, resolve its working directory and plan contract, and approve any non-sensitive server submission required for a separate evaluation. Do not benchmark a missing helper."
+      },
+      {
+        "skill": "Unity version-specific design modules",
+        "reason": "Question: do the source-anchored constraints prevent library-specific mistakes for the versions Ethan actually uses?",
+        "task": "Use a disposable fixture pinned to the relevant package: review tween cleanup during object disable or an Addressables handle-release path against known expected behavior.",
+        "success_criteria": "Compile against the pinned version, pass the lifecycle checks, avoid mixing DOTween and PrimeTween APIs, and preserve package-specific constraints.",
+        "prerequisite": "A concrete project/package version is selected and source anchors can be resolved. No project manifests were inspected for this audit."
+      },
+      {
+        "skill": "stripe-best-practices",
+        "reason": "Question: does the latest-version default cause an unnecessary migration during a small maintenance change?",
+        "task": "Use a synthetic integration pinned to a known supported version and request a narrow webhook-handler repair; compare current instructions, compatibility-first wording, and baseline.",
+        "success_criteria": "Make the requested repair without unrelated version changes; validate against current official docs and a local test fixture; use no live account or payment data.",
+        "prerequisite": "An authorized Stripe maintenance task and pinned fixture exist; verify version facts then. The listed versions were not checked against live releases here."
+      }
+    ],
+    "keep": [
+      {
+        "skill": "Unity specialists and manual guidance",
+        "reason": "Keep version scopes, API pitfalls, discovery/dry-run conventions, and the distinction between teaching and automation."
+      },
+      {
+        "skill": "Security phases",
+        "reason": "Keep their distinct evidence and phase contracts; lexical similarity alone does not support consolidation."
+      },
+      {
+        "skill": "Canva transaction protocol",
+        "reason": "Keep previews, saved-versus-draft honesty, supported-operation checks, and the explicit single-approval composition exception."
+      },
+      {
+        "skill": "comfy and Data export helpers",
+        "reason": "Keep narrow local-workspace routing and source-preserving export workflows; disk discovery is not evidence of invocation."
+      }
+    ]
+  },
+  "limitations": [
+    "Static discovery is not exhaustive semantic review or proof of runtime health. Contextual evidence was inspected for 26 distinct skills; the remaining skills received automated scanning only. The 717 instruction signals were not all adjudicated individually.",
+    "All 16 lexical pairs were reviewed at trigger/purpose level; deeper implementation equivalence was not tested. Fixed-step and approval language is a lead, not a defect.",
+    "Advertised paths were reconciled with this session’s catalog. Additional disk files: C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\convert-to-doc\\SKILL.md; C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\convert-to-slides\\SKILL.md; C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\report-to-pdf\\SKILL.md; C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\schedule-refresh-jobs\\SKILL.md; C:\\Users\\ethan\\.codex\\plugins\\cache\\openai-curated-remote\\data-analytics\\1.0.9\\skills\\share-artifact-summary\\SKILL.md; C:\\Users\\ethan\\.codex\\skills\\.system\\review-agent\\SKILL.md",
+    "Only the advertised plugin versions were included, plus the local .codex/skills and .agents/skills roots and five sibling Data helper skills. Other cached versions, other user accounts, Claude directories, remote hosts, and custom roots outside this scope were not scanned. No cache ordering or runtime precedence was inferred.",
+    "The scanner skips linked directories and uses conservative prose Markdown reference detection. Fenced code paths, tool dependencies, indirect references, remote URLs, and source-code citations are not comprehensively validated. Header validity does not guarantee host compatibility.",
+    "No conversation logs, usage records, private personal-context capsules, project manifests, credentials, or account data were inspected. No skill invocation frequency or abandonment claim is available.",
+    "No target scripts, services, benchmarks, external messages, payment operations, or live editor/design changes were executed. Only the audit scanner, report renderer, and local report validation ran.",
+    "The orchestrator’s advertised tool was checked by metadata only; no server request was sent. Its helper could exist outside the inspected package, so the dependency concern remains unresolved.",
+    "Underlying Unity, Canva, and Stripe API claims and current version tables were not independently revalidated; descriptions here characterize installed instructions, not guaranteed current platform behavior.",
+    "Audit method: cth9191/skill-audit, commit c6e7079c822043ff0b67444dbed477dacc83ae77, retrieved from https://github.com/cth9191/skill-audit into a separate review workspace, not installed. The repository copy is excluded from library counts. Exact running model identifier and effort were not exposed reliably; no model comparison is claimed.",
+    "Recommendations authorize no changes. Managed plugin caches should be repaired through an appropriate source/update path after a separate decision, not edited speculatively."
+  ]
+}

@@ -1,0 +1,287 @@
+[
+  {
+    "name": "pillow_paired_approach",
+    "h": 900,
+    "targets": [
+      [
+        500,
+        270,
+        900
+      ],
+      [
+        500,
+        -270,
+        900
+      ]
+    ],
+    "branches": [
+      -1,
+      -1
+    ],
+    "gap": 100,
+    "object": "10_ASSUMED_Pillow_300x400x60mm",
+    "position": [
+      500,
+      0,
+      900
+    ],
+    "shelf": false,
+    "claim": "Approach only; no validated grasp.",
+    "angles_deg": [
+      [
+        -10.53750500735585,
+        63.806718507415404,
+        -127.61343701483081,
+        63.806718507415404
+      ],
+      [
+        10.53750500735585,
+        63.806718507415404,
+        -127.61343701483081,
+        63.806718507415404
+      ]
+    ],
+    "actual_grip_centers_mm": [
+      [
+        500.08262158330075,
+        270.2370605531276,
+        900.0000000000011
+      ],
+      [
+        500.0826215833024,
+        -270.23706055312766,
+        900.0000000000007
+      ]
+    ],
+    "robot_pairs": [],
+    "object_environment_pairs": []
+  },
+  {
+    "name": "bottle_floor_approach",
+    "h": 400,
+    "targets": [
+      [
+        450,
+        0,
+        110
+      ],
+      [
+        400,
+        -340,
+        400
+      ]
+    ],
+    "branches": [
+      -1,
+      -1
+    ],
+    "gap": 62,
+    "object": "10_ASSUMED_Bottle_D60x220mm",
+    "position": [
+      450,
+      0,
+      0
+    ],
+    "shelf": false,
+    "claim": "Open jaws around bottle; nominal 1 mm per-side gap before closing.",
+    "angles_deg": [
+      [
+        -47.41944536016462,
+        2.510647981683321,
+        -86.92312211306438,
+        84.41247413138106
+      ],
+      [
+        0.0,
+        73.80714264608964,
+        -147.6142852921793,
+        73.80714264608964
+      ]
+    ],
+    "actual_grip_centers_mm": [
+      [
+        450.148175859925,
+        0.06157750944097984,
+        109.94987775449411
+      ],
+      [
+        400.0729782415138,
+        -340.0,
+        400.00000000000006
+      ]
+    ],
+    "robot_pairs": [],
+    "object_environment_pairs": []
+  },
+  {
+    "name": "box_floor_approach",
+    "h": 400,
+    "targets": [
+      [
+        450,
+        340,
+        50
+      ],
+      [
+        400,
+        -340,
+        400
+      ]
+    ],
+    "branches": [
+      -1,
+      -1
+    ],
+    "gap": 62,
+    "object": "10_ASSUMED_Box_100x60x80mm",
+    "position": [
+      451,
+      340,
+      40
+    ],
+    "shelf": false,
+    "claim": "Open jaws around box; no friction/load validation.",
+    "angles_deg": [
+      [
+        0.0,
+        -10.546988341982619,
+        -94.60143303347009,
+        105.1484213754527
+      ],
+      [
+        0.0,
+        73.80714264608964,
+        -147.6142852921793,
+        73.80714264608964
+      ]
+    ],
+    "actual_grip_centers_mm": [
+      [
+        450.2943215912128,
+        339.9999999999999,
+        50.17855393800792
+      ],
+      [
+        400.0729782415138,
+        -340.0,
+        400.00000000000006
+      ]
+    ],
+    "robot_pairs": [],
+    "object_environment_pairs": []
+  },
+  {
+    "name": "box_carry_approach",
+    "h": 900,
+    "targets": [
+      [
+        400,
+        340,
+        900
+      ],
+      [
+        400,
+        -340,
+        900
+      ]
+    ],
+    "branches": [
+      -1,
+      -1
+    ],
+    "gap": 62,
+    "object": "10_ASSUMED_Box_100x60x80mm",
+    "position": [
+      401,
+      340,
+      890
+    ],
+    "shelf": false,
+    "claim": "Carried object envelope; no grip force validation.",
+    "angles_deg": [
+      [
+        0.0,
+        73.80714264608964,
+        -147.6142852921793,
+        73.80714264608964
+      ],
+      [
+        0.0,
+        73.80714264608964,
+        -147.6142852921793,
+        73.80714264608964
+      ]
+    ],
+    "actual_grip_centers_mm": [
+      [
+        400.0729782415128,
+        340.0000000000002,
+        899.9999999999999
+      ],
+      [
+        400.0729782415138,
+        -340.0,
+        900.0
+      ]
+    ],
+    "robot_pairs": [],
+    "object_environment_pairs": []
+  },
+  {
+    "name": "box_shelf_approach",
+    "h": 1400,
+    "targets": [
+      [
+        470,
+        340,
+        1726.4
+      ],
+      [
+        400,
+        -340,
+        1400
+      ]
+    ],
+    "branches": [
+      -1,
+      -1
+    ],
+    "gap": 62,
+    "object": "10_ASSUMED_Box_100x60x80mm",
+    "position": [
+      471,
+      340,
+      1716.4
+    ],
+    "shelf": true,
+    "claim": "Box underside at shelf height; jaws have nominal 1 mm per-side clearance.",
+    "angles_deg": [
+      [
+        0.0,
+        102.0217749639436,
+        -96.69720183212766,
+        -5.324573131815942
+      ],
+      [
+        0.0,
+        73.80714264608964,
+        -147.6142852921793,
+        73.80714264608964
+      ]
+    ],
+    "actual_grip_centers_mm": [
+      [
+        470.12540464540626,
+        340.0000000000001,
+        1726.2939437573752
+      ],
+      [
+        400.0729782415138,
+        -340.0,
+        1400.0
+      ]
+    ],
+    "robot_pairs": [],
+    "object_environment_pairs": []
+  }
+]

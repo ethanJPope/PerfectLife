@@ -1,0 +1,554 @@
+{
+  "sketches": [
+    {
+      "component": "04_Left_Yaw_Bearing_Housing",
+      "name": "Bearing_Housing_100mm_Envelope",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Yaw_Bearing_Housing",
+      "name": "Bearing_Housing_100mm_Envelope",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "10_ASSUMED_Pillow_300x400x60mm",
+      "name": "ASSUMED_Pillow_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "10_ASSUMED_Box_100x60x80mm",
+      "name": "ASSUMED_Box_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "10_ASSUMED_Bottle_D60x220mm",
+      "name": "ASSUMED_Bottle_Section",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "10_ASSUMED_Shelf_400x1000x25mm",
+      "name": "ASSUMED_Shelf_Surface_1676p4mm_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "01_Base_Envelope",
+      "name": "Base_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Shoulder_Mount_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Shoulder_Pitch_Sweep_Clearance_35p5mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Yaw_Axis_XY_Location",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Yaw_Rotor_88mm_Envelope",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "02_Mast_Envelope",
+      "name": "Mast_Envelope_Side_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Shared_Carriage_Side_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Shoulder_Yaw_Sweep_Relief_30",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Shoulder_Yaw_Sweep_Relief_-30",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "name": "Upper_Link_304p8mm_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "name": "Pivot_Housing_Envelopes",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "name": "Fore_Link_304p8mm_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Left_Forearm",
+      "name": "Pivot_Housing_Envelopes",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Left_Pad_Positive",
+      "name": "Soft_Pad_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Left_Finger_Positive",
+      "name": "Finger_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "name": "Palm_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "name": "Wrist_Sweep_Clearance_35p5mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Left_Finger_Negative",
+      "name": "Finger_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Left_Pad_Negative",
+      "name": "Soft_Pad_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Shoulder_Mount_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Shoulder_Pitch_Sweep_Clearance_35p5mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Yaw_Axis_XY_Location",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Yaw_Rotor_88mm_Envelope",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "name": "Upper_Link_304p8mm_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "name": "Pivot_Housing_Envelopes",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "name": "Palm_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "name": "Wrist_Sweep_Clearance_35p5mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Right_Finger_Positive",
+      "name": "Finger_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "name": "Fore_Link_304p8mm_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "name": "Joint_Axis_Locations",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "06_Right_Forearm",
+      "name": "Pivot_Housing_Envelopes",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Right_Pad_Negative",
+      "name": "Soft_Pad_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "08_Right_Finger_Negative",
+      "name": "Finger_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "09_Right_Pad_Positive",
+      "name": "Soft_Pad_Envelope_Profile",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "name": "Layout_Side",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "name": "Reach_Left_Floor_2x304p8mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "name": "Reach_Left_Shelf_2x304p8mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "name": "Reach_Right_Floor_2x304p8mm",
+      "constrained": true,
+      "health": 0
+    },
+    {
+      "component": "00_Layout",
+      "name": "Reach_Right_Shelf_2x304p8mm",
+      "constrained": true,
+      "health": 0
+    }
+  ],
+  "features": [
+    {
+      "component": "04_Left_Yaw_Bearing_Housing",
+      "name": "Left_Yaw_Bearing_Housing_Packaging",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Right_Yaw_Bearing_Housing",
+      "name": "Right_Yaw_Bearing_Housing_Packaging",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "10_ASSUMED_Pillow_300x400x60mm",
+      "name": "ASSUMED_Pillow_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "10_ASSUMED_Box_100x60x80mm",
+      "name": "ASSUMED_Box_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "10_ASSUMED_Bottle_D60x220mm",
+      "name": "ASSUMED_Bottle_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "10_ASSUMED_Shelf_400x1000x25mm",
+      "name": "ASSUMED_Shelf_Surface_1676p4mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "01_Base_Envelope",
+      "name": "Chassis_Width_450mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Shoulder_Mount",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Left_Shoulder_Standoff",
+      "name": "Left_Yaw_Rotor_Packaging",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "02_Mast_Envelope",
+      "name": "Mast_Envelope_Width_140mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Shared_Carriage_Width_660mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Yaw_Sweep_Clearance_Carriage_Only",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "03_Shared_Carriage",
+      "name": "Yaw_Sweep_Clearance_Carriage_Only (1)",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "name": "Upper_Link_304p8mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "05_Left_Upper_Arm",
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "06_Left_Forearm",
+      "name": "Fore_Link_304p8mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "06_Left_Forearm",
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "09_Left_Pad_Positive",
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "08_Left_Finger_Positive",
+      "name": "Finger_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "name": "Palm_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "07_Left_Wrist_Palm",
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "08_Left_Finger_Negative",
+      "name": "Finger_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "09_Left_Pad_Negative",
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Shoulder_Mount",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "04_Right_Shoulder_Standoff",
+      "name": "Right_Yaw_Rotor_Packaging",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "name": "Upper_Link_304p8mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "05_Right_Upper_Arm",
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "name": "Palm_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "07_Right_Wrist_Palm",
+      "name": "Pivot_Clearance_Cut_This_Component_Only",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "08_Right_Finger_Positive",
+      "name": "Finger_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "06_Right_Forearm",
+      "name": "Fore_Link_304p8mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "06_Right_Forearm",
+      "name": "Pivot_Housing_Envelopes_24mm",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "09_Right_Pad_Negative",
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "08_Right_Finger_Negative",
+      "name": "Finger_Envelope",
+      "health": 0,
+      "message": ""
+    },
+    {
+      "component": "09_Right_Pad_Positive",
+      "name": "Soft_Pad_Envelope",
+      "health": 0,
+      "message": ""
+    }
+  ],
+  "yaw_limits": [
+    {
+      "name": "Left_Shoulder_Yaw",
+      "axis": [
+        5.551115123125741e-17,
+        0.0,
+        1.0000000000000004
+      ],
+      "minimum": -1.2217304763960306,
+      "maximum": 1.2217304763960306,
+      "rest": false
+    },
+    {
+      "name": "Right_Shoulder_Yaw",
+      "axis": [
+        1.6653345369377338e-16,
+        0.0,
+        1.0000000000000004
+      ],
+      "minimum": -1.2217304763960306,
+      "maximum": 1.2217304763960306,
+      "rest": false
+    }
+  ],
+  "user_parameters": 0,
+  "compute_all": true
+}

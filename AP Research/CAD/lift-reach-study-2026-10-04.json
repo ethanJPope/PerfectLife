@@ -1,0 +1,104 @@
+{
+  "status": "provisional geometry only; not torque, joint-limit, gripper or trajectory validation",
+  "shelf_surface_mm": 1676.4,
+  "floor_grasp_center_mm": 50,
+  "shelf_grasp_center_mm": 1726.4,
+  "cases": [
+    {
+      "study": "Reach_Left_Floor_2x304p8mm",
+      "shoulder_mm": [
+        80.0,
+        300,
+        400
+      ],
+      "elbow_mm": [
+        380.09939052534594,
+        300,
+        346.6764985553657
+      ],
+      "target_mm": [
+        450,
+        300,
+        50
+      ],
+      "straight_distance_mm": 509.31326312987375,
+      "maximum_reach_mm": 609.6,
+      "two_equal_links_mm": 304.8,
+      "nominal_link_radius_mm": 25,
+      "conditional_lateral_chassis_clearance_bound_mm": 50,
+      "fully_constrained": true
+    },
+    {
+      "study": "Reach_Left_Shelf_2x304p8mm",
+      "shoulder_mm": [
+        80.0,
+        300,
+        1400
+      ],
+      "elbow_mm": [
+        198.63572732712225,
+        300,
+        1680.7643214540706
+      ],
+      "target_mm": [
+        500,
+        300,
+        1726.4
+      ],
+      "straight_distance_mm": 531.9181891983014,
+      "maximum_reach_mm": 609.6,
+      "two_equal_links_mm": 304.8,
+      "nominal_link_radius_mm": 25,
+      "conditional_lateral_chassis_clearance_bound_mm": 50,
+      "fully_constrained": true
+    },
+    {
+      "study": "Reach_Right_Floor_2x304p8mm",
+      "shoulder_mm": [
+        80.0,
+        -300,
+        400
+      ],
+      "elbow_mm": [
+        380.09939052534594,
+        -300,
+        346.6764985553657
+      ],
+      "target_mm": [
+        450,
+        -300,
+        50
+      ],
+      "straight_distance_mm": 509.31326312987375,
+      "maximum_reach_mm": 609.6,
+      "two_equal_links_mm": 304.8,
+      "nominal_link_radius_mm": 25,
+      "conditional_lateral_chassis_clearance_bound_mm": 50,
+      "fully_constrained": true
+    },
+    {
+      "study": "Reach_Right_Shelf_2x304p8mm",
+      "shoulder_mm": [
+        80.0,
+        -300,
+        1400
+      ],
+      "elbow_mm": [
+        198.63572732712225,
+        -300,
+        1680.7643214540706
+      ],
+      "target_mm": [
+        500,
+        -300,
+        1726.4
+      ],
+      "straight_distance_mm": 531.9181891983014,
+      "maximum_reach_mm": 609.6,
+      "two_equal_links_mm": 304.8,
+      "nominal_link_radius_mm": 25,
+      "conditional_lateral_chassis_clearance_bound_mm": 50,
+      "fully_constrained": true
+    }
+  ]
+}

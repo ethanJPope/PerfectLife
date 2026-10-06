@@ -1,0 +1,670 @@
+class ProjectsController < ApplicationController
+  allow_unauthenticated_access only: %i[show]
+  before_action :set_project, only: %i[show edit update destroy submit_for_review ai_check run_ai_check ai_check_status sync_journal set_devlog_mode link_repo set_journal_branch resubmit_pitch upload_cover_image export_devlogs add_kudo destroy_kudo]
+
+  def show
+    authorize @project
+
+    @og_title = @project.name
+    @og_description = @project.subtitle.presence || "A project on Hack Club Forge by #{@project.user.display_name}."
+    @og_image = @project.cover_image_url
+    SyncJournalJob.sync_if_stale(@project) if @project.member?(current_user)
+
+    can_manage_lapse_links = current_user.present? && policy(@project).manage_lapse_links?
+
+    render inertia: "Projects/Show", props: {
+      project: serialize_project_detail(@project),
+      devlogs: @project.devlogs.includes(:user).map { |d| serialize_devlog(d) },
+      review_history: serialize_review_history(@project),
+      is_admin_view: policy(@project).update? && @project.user_id != current_user&.id,
+      can: {
+        update: policy(@project).update?,
+        destroy: policy(@project).destroy?,
+        submit_for_review: policy(@project).submit_for_review?,
+        give_kudos: current_user.present? && !@project.member?(current_user),
+        create_devlog: current_user.present? && policy(@project).create_devlog?,
+        manage_team: current_user.present? && policy(@project).manage_team?,
+        leave: current_user.present? && @project.member?(current_user) && @project.user_id != current_user.id
+      },
+      hackatime_enabled: HackatimeService.enabled?,
+      pending_invites: policy(@project).manage_team? ? serialize_pending_invites(@project) : [],
+      kudos: @project.kudos.includes(:author).order(created_at: :desc).map { |k| serialize_project_kudo(k) },
+      orphaned_lapse_links: can_manage_lapse_links ? @project.orphaned_lapse_links.order(:created_at).map { |o| { id: o.id, title: o.title, lapse_url: o.lapse_url } } : []
+    }
+  end
+
+  def new
+    @project = current_user.projects.build
+    authorize @project
+
+    case params[:tier]
+    when "tier_1"
+      render inertia: "Projects/AdvancedPitch", props: {}
+    when "tier_2", "tier_3", "tier_4"
+      render inertia: "Projects/Form", props: {
+        project: { name: "", subtitle: "", repo_link: "", tags: [], tier: params[:tier], uses_ai: false, ai_usage: "", hackatime_projects: [] },
+        title: "New Project",
+        submit_url: projects_path,
+        method: "post",
+        hackatime_enabled: HackatimeService.enabled?,
+        macondo_enabled: MacondoService.enabled?
+      }
+    when Project::BUILD_REVIEW_TIER
+      render inertia: "Projects/Form", props: {
+        project: { name: "", subtitle: "", repo_link: "", tags: [], tier: Project::BUILD_REVIEW_TIER, build_review: true, linked_project_id: nil, uses_ai: false, ai_usage: "", hackatime_projects: [] },
+        title: "New Build Review",
+        submit_url: projects_path,
+        method: "post",
+        linkable_projects: linkable_projects_for(current_user),
+        hackatime_enabled: HackatimeService.enabled?,
+        macondo_enabled: MacondoService.enabled?
+      }
+    else
+      render inertia: "Projects/New", props: {
+        step: params[:path] == "project_review" ? "tiers" : "choose"
+      }
+    end
+  end
+
+  def create
+    macondo_project_id = (params.dig(:project, :macondo_project_id) || params[:macondo_project_id]).presence
+
+    @project = current_user.projects.build(project_params)
+    @project.status = :draft
+    @project.devlog_mode = "website" if macondo_project_id
+    if @project.tier == Project::BUILD_REVIEW_TIER
+      @project.build_review = true
+    end
+    authorize @project
+
+    if @project.save
+      audit!("project.created", target: @project, metadata: { tier: @project.tier, build_review: @project.build_review })
+      ImportMacondoDataJob.perform_now(@project.id, macondo_project_id) if macondo_project_id
+      redirect_to @project, notice: @project.build_review? ? "Build review created as draft." : "Project created as draft."
+    else
+      fallback_tier = @project.build_review? ? Project::BUILD_REVIEW_TIER : @project.tier
+      redirect_back fallback_location: new_project_path(tier: fallback_tier), inertia: { errors: @project.errors.messages }
+    end
+  end
+
+  def edit
+    authorize @project
+
+    render inertia: "Projects/Form", props: {
+      project: {
+        id: @project.id,
+        name: @project.name,
+        subtitle: @project.subtitle.to_s,
+        repo_link: @project.repo_link.to_s,
+        tags: @project.tags,
+        tier: @project.tier,
+        devlog_mode: @project.devlog_mode,
+        uses_ai: @project.uses_ai,
+        ai_usage: @project.ai_usage.to_s,
+        hackatime_projects: @project.hackatime_projects
+      },
+      title: "Edit Project",
+      submit_url: project_path(@project),
+      method: "patch",
+      hackatime_enabled: HackatimeService.enabled?
+    }
+  end
+
+  def update
+    authorize @project
+
+    if @project.update(project_params)
+      audit!("project.updated", target: @project, metadata: { changed: project_params.keys, changes: audit_changes_for(@project) })
+      redirect_to @project, notice: "Project updated."
+    else
+      redirect_back fallback_location: edit_project_path(@project), inertia: { errors: @project.errors.messages }
+    end
+  end
+
+  def destroy
+    authorize @project
+    @project.discard
+    audit!("project.soft_deleted", target: @project, metadata: { via: "owner" })
+    redirect_to explore_path, notice: "Project deleted."
+  end
+
+  def hackatime_projects
+    authorize Project
+
+    unless HackatimeService.enabled?
+      render json: { error: "Hackatime is not configured." }, status: :service_unavailable
+      return
+    end
+
+    user_id = HackatimeService.find_user_id(slack_id: current_user.slack_id, email: current_user.email)
+
+    if user_id.nil?
+      render json: { error: "We couldn't find a Hackatime account for #{current_user.email}. Make sure you've used Hackatime with this email." }, status: :not_found
+      return
+    end
+
+    render json: { projects: HackatimeService.get_user_projects(user_id) }
+  end
+
+  def import_from_github
+    authorize Project
+    repo_url = params[:repo_url].to_s
+    parsed = repo_url.match(%r{github\.com/([^/]+)/([^/]+?)(?:\.git)?(?:/|$)})
+
+    unless parsed
+      render json: { error: "Invalid GitHub repository URL" }, status: :unprocessable_entity
+      return
+    end
+
+    owner, repo = parsed[1], parsed[2]
+    github_base = "https://api.github.com/repos/#{owner}/#{repo}"
+
+    repo_data = fetch_json(github_base)
+    unless repo_data
+      render json: { error: "Repository not found" }, status: :not_found
+      return
+    end
+
+    readme_data = fetch_json("#{github_base}/readme")
+    readme_content = readme_data && readme_data["content"] ? Base64.decode64(readme_data["content"]).force_encoding("UTF-8") : ""
+
+    commits_data = fetch_json("#{github_base}/commits?per_page=10")
+    recent_commits = commits_data.is_a?(Array) ? commits_data.map { |c| c.dig("commit", "message") }.compact.join("\n") : ""
+
+    ai_prompt = <<~PROMPT
+      Analyze this GitHub repository and generate a concise project description for a hardware project grants platform called Forge.
+
+      Repository: #{repo_data["full_name"]}
+      GitHub Description: #{repo_data["description"] || "None"}
+      Language: #{repo_data["language"] || "Unknown"}
+      Topics: #{(repo_data["topics"] || []).join(", ").presence || "None"}
+
+      #{readme_content.present? ? "README:\n#{readme_content.truncate(4000)}" : "No README found."}
+
+      #{recent_commits.present? ? "Recent commit messages (devlog):\n#{recent_commits.truncate(2000)}" : ""}
+
+      Respond in valid JSON only, no markdown fences. Use this exact format:
+      {"name": "human readable project name", "description": "2-4 sentence description of what this project is, what it does, and what hardware/tech it uses. Write as if the builder is describing their own project.", "tags": ["tag1", "tag2", "tag3"]}
+    PROMPT
+
+    ai_response = Net::HTTP.post(
+      URI("https://ai.hackclub.com/proxy/v1/chat/completions"),
+      { model: "qwen/qwen3-32b", messages: [ { role: "user", content: ai_prompt } ] }.to_json,
+      "Content-Type" => "application/json",
+      "Authorization" => "Bearer #{ENV["HACKCLUB_AI_API_KEY"]}"
+    )
+
+    unless ai_response.is_a?(Net::HTTPSuccess)
+      render json: { error: "AI service unavailable" }, status: :service_unavailable
+      return
+    end
+
+    ai_data = JSON.parse(ai_response.body)
+    content = ai_data.dig("choices", 0, "message", "content") || ""
+    json_match = content.match(/\{[\s\S]*\}/)
+
+    unless json_match
+      render json: { error: "Could not parse AI response" }, status: :unprocessable_entity
+      return
+    end
+
+    parsed_ai = JSON.parse(json_match[0])
+
+    render json: {
+      name: parsed_ai["name"] || repo_data["name"],
+      description: parsed_ai["description"] || repo_data["description"],
+      repo_link: repo_data["html_url"],
+      tags: Array(parsed_ai["tags"]).first(5)
+    }
+  rescue JSON::ParserError
+    render json: { error: "Could not parse AI response" }, status: :unprocessable_entity
+  end
+
+  def import_from_macondo
+    authorize Project
+
+    unless MacondoService.enabled?
+      render json: { error: "Macondo import isn't configured." }, status: :service_unavailable
+      return
+    end
+
+    project_id = MacondoService.parse_project_id(params[:url])
+    if project_id.blank?
+      render json: { error: "That doesn't look like a Macondo project link." }, status: :unprocessable_entity
+      return
+    end
+
+    data = MacondoService.get_project(project_id)
+    if data.nil?
+      render json: { error: "Couldn't find that Macondo project." }, status: :not_found
+      return
+    end
+
+    unless MacondoService.owned_by?(data, current_user)
+      render json: { error: "This Macondo project isn't owned by your account." }, status: :forbidden
+      return
+    end
+
+    if MacondoService.shipped?(data)
+      render json: { error: "This project has already been shipped on Macondo and can't be imported." }, status: :unprocessable_entity
+      return
+    end
+
+    render json: {
+      name: data["name"],
+      description: data["description"],
+      repo_link: data["repository_url"],
+      hackatime_projects: Array(data["hackatime_projects"]),
+      macondo_project_id: project_id
+    }
+  end
+
+  def add_kudo
+    authorize @project, :show?
+
+    if current_user.id == @project.user_id
+      redirect_to @project, alert: "You can't give yourself kudos."
+      return
+    end
+
+    content = params[:content].to_s.strip
+    if content.blank?
+      redirect_to @project, alert: "Kudos can't be empty."
+      return
+    end
+
+    kudo = @project.kudos.create!(content: content, author: current_user, user: @project.user)
+    audit!("project.kudo_added", target: @project, metadata: { kudo_id: kudo.id, content: content })
+    redirect_to @project, notice: "Kudos sent."
+  end
+
+  def destroy_kudo
+    authorize @project, :show?
+    kudo = @project.kudos.find(params[:kudo_id])
+
+    unless current_user.id == kudo.author_id || current_user.has_permission?("users")
+      raise ActionController::RoutingError, "Not Found"
+    end
+
+    audit!("project.kudo_destroyed", target: @project, metadata: { kudo_id: kudo.id })
+    kudo.destroy
+    redirect_to @project, notice: "Kudos deleted."
+  end
+
+  def sync_journal
+    authorize @project, :update?
+
+    unless @project.repo_link.present?
+      redirect_back fallback_location: project_path(@project), alert: "Link a repository first."
+      return
+    end
+
+    result = SyncJournalJob.perform_now(@project.id, clear: params[:clear] == "true")
+    audit!("project.journal_synced", target: @project)
+
+    case result
+    when :invalid_repo
+      redirect_to @project, alert: "That repo link doesn't look like a GitHub, GitLab, or Codeberg URL."
+    when :fetch_failed
+      redirect_to @project, alert: "Couldn't find a JOURNAL.md in that repo. Check the repo link and branch."
+    else
+      redirect_to @project, notice: "Journal synced."
+    end
+  end
+
+  def export_devlogs
+    authorize @project, :update?
+
+    entries = @project.devlogs.order(id: :asc)
+    md = +"---\n"
+    md << "title: #{@project.name.to_json}\n"
+    md << "author: #{@project.user.display_name.to_json}\n"
+    md << "description: #{@project.subtitle.to_json}\n" if @project.subtitle.present?
+    md << "created_at: #{@project.created_at.strftime('%Y-%m-%d').to_json}\n"
+    md << "---\n\n"
+
+    entries.each do |entry|
+      md << "# #{entry.created_at.strftime('%Y-%m-%d')}: #{entry.title}\n\n"
+      md << "**Total time spent: #{entry.time_spent}**\n\n" if entry.time_spent.present?
+      md << "#{entry.content}\n\n"
+    end
+
+    send_data md, filename: "JOURNAL.md", type: "text/markdown"
+  end
+
+  def set_devlog_mode
+    authorize @project, :update?
+    mode = params[:devlog_mode]
+    unless %w[website git].include?(mode)
+      redirect_to @project, alert: "Invalid devlog mode."
+      return
+    end
+    @project.update!(devlog_mode: mode)
+    redirect_to @project, notice: mode == "git" ? "Git-based devlogging enabled. Link your repo and add a JOURNAL.md file." : "Website devlogging enabled."
+  end
+
+  def link_repo
+    authorize @project, :update?
+    repo_url = params[:repo_link].to_s.strip
+    if repo_url.blank? || !repo_url.match?(/\Ahttps?:\/\/\S+\z/i)
+      redirect_to @project, alert: "Enter a valid repository URL."
+      return
+    end
+    @project.update!(repo_link: repo_url)
+    redirect_to @project, notice: "Repository linked."
+  end
+
+  def set_journal_branch
+    authorize @project, :update?
+    branch = params[:journal_branch].to_s.strip
+    if branch.present? && !branch.match?(/\A[\w.\-\/]+\z/)
+      redirect_to @project, alert: "Branch name has invalid characters."
+      return
+    end
+    @project.update!(journal_branch: branch.presence)
+    redirect_to @project, notice: branch.present? ? "Journal branch set to #{branch}." : "Journal branch reset to default."
+  end
+
+  def submit_for_review
+    authorize @project
+
+    unless @project.repo_link.present?
+      redirect_back fallback_location: project_path(@project), alert: "Link a repository before submitting for review."
+      return
+    end
+
+    if @project.subtitle.blank?
+      redirect_to @project, alert: "Add a short description before submitting for review."
+      return
+    end
+
+    unless @project.devlogs.any?
+      redirect_to @project, alert: "Add at least one devlog entry before submitting for review."
+      return
+    end
+
+    if @project.cover_image_url.blank?
+      redirect_to @project, alert: "Upload a cover image before submitting for review."
+      return
+    end
+
+    unless current_user.idv_verified?
+      idv_status = current_user.idv_display_status
+      alert = if idv_status == "needs_submission" || idv_status == "pending"
+        "Verify your identity on Hack Club Auth before submitting for review."
+      else
+        "You're ineligible to submit for review."
+      end
+      redirect_to @project, alert: alert
+      return
+    end
+
+    unless current_user.address_line1.present?
+      redirect_to @project, alert: "Fill in your shipping address before submitting for review."
+      return
+    end
+
+    @project.submit_for_review!
+    audit!("project.submitted_for_review", target: @project)
+    redirect_to @project, notice: "Project submitted for review."
+  end
+
+  def resubmit_pitch
+    authorize @project, :update?
+
+    enqueued = false
+    @project.with_lock do
+      next unless @project.returned? && @project.advanced? && @project.slack_channel_id.present? && @project.slack_message_ts.present?
+
+      @project.update!(status: :pitch_pending)
+      enqueued = true
+    end
+
+    unless enqueued
+      redirect_to @project, alert: "This project cannot be resubmitted."
+      return
+    end
+
+    ResubmitPitchJob.perform_later(@project.id)
+    redirect_to @project, notice: "Re-fetching your updated pitch from Slack and resubmitting for review..."
+  end
+
+  def upload_cover_image
+    authorize @project, :update?
+
+    file = params[:cover_image]
+    unless file.respond_to?(:read)
+      redirect_to @project, alert: "No file uploaded."
+      return
+    end
+
+    @project.cover_image.attach(file)
+    @project.update!(cover_image_url: nil)
+    redirect_to @project, notice: "Cover image uploaded. Processing..."
+  end
+
+  def ai_check
+    authorize @project, :submit_for_review?
+
+    enqueue_ai_check!(via: "auto_restart") if @project.ai_check_stale?
+
+    render inertia: "Projects/AiCheck", props: {
+      project: {
+        id: @project.id,
+        name: @project.name,
+        subtitle: @project.subtitle,
+        cover_image_url: @project.cover_image_url
+      },
+      result: @project.ai_check_result_for_display,
+      ran_at: @project.ai_check_ran_at&.iso8601
+    }
+  end
+
+  def run_ai_check
+    authorize @project, :submit_for_review?
+
+    enqueue_ai_check!(via: "owner")
+    render json: { status: "queued" }
+  end
+
+  def ai_check_status
+    authorize @project, :submit_for_review?
+    enqueue_ai_check!(via: "auto_restart") if @project.ai_check_stale?
+    render json: { result: @project.ai_check_result_for_display, ran_at: @project.ai_check_ran_at&.iso8601 }
+  end
+
+  private
+
+  def enqueue_ai_check!(via:)
+    @project.update_columns(ai_check_result: { "status" => "queued", "queued_at" => Time.current.iso8601 })
+    RunAiRequirementsCheckJob.perform_later(@project.id)
+    audit!("project.ai_check_run", target: @project, metadata: { via: via })
+  end
+
+  def fetch_json(url)
+    uri = URI(url)
+    response = Net::HTTP.get_response(uri)
+    response.is_a?(Net::HTTPSuccess) ? JSON.parse(response.body) : nil
+  rescue StandardError
+    nil
+  end
+
+  def set_project
+    @project = Project.find(params[:id])
+  end
+
+  def project_params
+    params.expect(project: [ :name, :subtitle, :repo_link, :tier, :devlog_mode, :linked_project_id, :uses_ai, :ai_usage, tags: [], hackatime_projects: [] ])
+  end
+
+  def linkable_projects_for(user)
+    linked_ids = Project.kept.where(build_review: true).where.not(linked_project_id: nil).select(:linked_project_id)
+
+    user.projects
+      .kept
+      .where(status: :approved, build_review: false)
+      .where.not(id: linked_ids)
+      .order(created_at: :desc)
+      .map { |p| { id: p.id, name: p.name } }
+  end
+
+  def serialize_project_detail(project)
+    can_view_private_project_data = can_view_project_review?(project)
+    can_view_user_address = current_user.present? && (current_user.id == project.user_id || current_user.staff?)
+
+    {
+      id: project.id,
+      name: project.name,
+      subtitle: project.subtitle,
+      tags: project.tags,
+      repo_link: project.repo_link,
+      journal_branch: project.journal_branch,
+      journal_parse_failed: project.journal_parse_failed,
+      status: project.status,
+      devlog_mode: project.devlog_mode,
+      uses_ai: project.uses_ai,
+      ai_usage: project.ai_usage,
+      hackatime_projects: project.hackatime_projects,
+      review_feedback: can_view_private_project_data ? project.review_feedback : nil,
+      tier: project.tier,
+      coin_rate: project.coin_rate,
+      payout: can_view_private_project_data ? serialize_payout(project) : nil,
+      from_slack: project.slack_message_ts.present?,
+      cover_image_url: project.cover_image_url,
+      built_at: project.built_at&.strftime("%b %d, %Y"),
+      build_proof_url: project.build_proof_url,
+      build_review: project.build_review,
+      linked_project: project.linked_project ? { id: project.linked_project.id, name: project.linked_project.name } : nil,
+      airtable_sent: can_view_private_project_data && project.airtable_sent?,
+      user_id: project.user_id,
+      user_display_name: project.user.display_name,
+      user_avatar: project.user.avatar,
+      members: serialize_members(project),
+      max_team_size: Project::MAX_TEAM_SIZE,
+      user_has_address: can_view_user_address && project.user.address_line1.present?,
+      user_idv_verified: project.user.idv_verified?,
+      user_verification_status: project.user.idv_display_status,
+      user_address: can_view_user_address && project.user.address_line1.present? ? {
+        address_line1: project.user.address_line1,
+        address_line2: project.user.address_line2,
+        city: project.user.city,
+        state: project.user.state,
+        country: project.user.country,
+        postal_code: project.user.postal_code,
+        phone_number: project.user.phone_number
+      } : nil,
+      hca_address_portal_url: HcaService.address_portal_url(return_to: project_url(project)),
+      created_at: project.created_at.strftime("%B %d, %Y")
+    }
+  end
+
+  def can_view_project_review?(project)
+    current_user.present? && (project.member?(current_user) || current_user.staff?)
+  end
+
+  def serialize_payout(project)
+    return nil unless project.approved?
+
+    share = current_user && project.project_payouts.find_by(user_id: current_user.id)
+    if share
+      {
+        hours: share.hours.to_f,
+        logged_hours: project.devlogs.where(user_id: current_user.id).sum(&:parsed_hours).to_f.round(2),
+        coins: share.coins.to_f,
+        streak_multiplier: share.streak_multiplier&.to_f,
+        guild_multiplier: share.guild_multiplier&.to_f,
+        team_total: project.coins_earned
+      }
+    else
+      {
+        hours: project.total_hours.to_f.round(2),
+        logged_hours: project.devlog_hours.to_f.round(2),
+        coins: project.coins_earned,
+        streak_multiplier: project.streak_at_approval && project.user.streak_multiplier(project.streak_at_approval),
+        guild_multiplier: nil,
+        team_total: nil
+      }
+    end
+  end
+
+  def serialize_members(project)
+    owner = { id: project.user_id, display_name: project.user.display_name, avatar: project.user.avatar, is_owner: true, collaborator_id: nil }
+    collaborators = project.project_collaborators.includes(:user).map do |pc|
+      { id: pc.user_id, display_name: pc.user.display_name, avatar: pc.user.avatar, is_owner: false, collaborator_id: pc.id }
+    end
+    [ owner ] + collaborators
+  end
+
+  def serialize_pending_invites(project)
+    project.collaboration_invites.pending.includes(:invitee).map do |invite|
+      {
+        id: invite.id,
+        invitee_display_name: invite.invitee.display_name,
+        invitee_avatar: invite.invitee.avatar,
+        created_at: invite.created_at.strftime("%b %d, %Y")
+      }
+    end
+  end
+
+  def serialize_devlog(devlog)
+    details = devlog.requirement_validation_details
+    {
+      id: devlog.id,
+      title: devlog.title,
+      content: devlog.content,
+      time_spent: devlog.time_spent,
+      time_hours: devlog.time_hours&.to_f,
+      lapse_url: policy(devlog).view_lapse_url? ? devlog.lapse_url : nil,
+      created_at: devlog.created_at.strftime("%B %d, %Y"),
+      user_id: devlog.user_id,
+      user_display_name: devlog.user.display_name,
+      user_avatar: devlog.user.avatar,
+      can_edit: current_user.present? && policy(devlog).update?,
+      meets_requirements: devlog.meets_submission_requirements?,
+      validation: {
+        content_length: details[:content_length],
+        min_content_length: details[:min_content_length],
+        has_image: details[:has_image],
+        meets_length_requirement: details[:meets_length_requirement],
+        meets_image_requirement: details[:meets_image_requirement]
+      }
+    }
+  end
+
+  def serialize_review_history(project)
+    return [] unless can_view_project_review?(project)
+
+    events = project.review_history.to_a
+    checkpoint_urls = project.checkpoint_urls_for(events)
+    events.map { |e| serialize_review_event(e, slack_url: checkpoint_urls[e.id]) }
+  end
+
+  def serialize_review_event(event, slack_url: nil)
+    meta = event.metadata || {}
+    {
+      id: event.id,
+      action: event.action,
+      stage: meta["stage"],
+      feedback: meta["feedback"].presence,
+      slack_url: slack_url,
+      reviewer_display_name: event.actor&.display_name,
+      reviewer_avatar: event.actor&.avatar,
+      target_type: event.target_type,
+      target_label: event.target_label,
+      created_at: event.created_at.strftime("%b %d, %Y %H:%M")
+    }
+  end
+
+  def serialize_project_kudo(kudo)
+    {
+      id: kudo.id,
+      content: kudo.content,
+      author_id: kudo.author_id,
+      author_name: kudo.author.display_name,
+      author_avatar: kudo.author.avatar,
+      author_is_staff: kudo.author.staff?,
+      can_destroy: current_user.present? && (current_user.id == kudo.author_id || current_user.has_permission?("users")),
+      created_at: kudo.created_at.strftime("%b %d, %Y")
+    }
+  end
+end

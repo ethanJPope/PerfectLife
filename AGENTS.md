@@ -1,0 +1,2 @@
+# PerfectLife / LifeVault
+The active vault is `D:\PerfectLife\LifeVault`. Read its `00 System/Start.md`, `00 System/Context.md`, and `03 Projects/Projects.md` when starting work. Follow `00 System/Memory rules.md` for saves, corrections, and handoffs. Ordinary useful facts are saved automatically; sensitive collection/use/storage requires specific permission. Use the installed LifeVault skills. Do not preload old vaults or unrelated project folders. The user requested a fresh start.
